@@ -1,0 +1,61 @@
+html {
+    line-height: 1.00;
+    -webkit-text-size-adjust: 100%;
+}
+
+.node {
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.node rect {
+    fill: #ccccff;
+    stroke: #9999bf;
+    stroke-width: 1px;
+}
+
+.node text {
+    fill: black;
+    font-family: monospace;
+    text-anchor: middle;
+}
+
+.or-group-circle {
+    stroke: #888;
+    stroke-width: 1.5px;
+    opacity: 0;
+}
+
+.optional-or-group-circle {
+    fill: white;
+    opacity: 1;
+}
+
+.mandatory-or-group-circle {
+    fill: rgb(136, 136, 136);
+    opacity: 1;
+}
+
+.alternative-group {
+    fill: white;
+    stroke: #888;
+    stroke-width: 1.5px;
+}
+
+.and-group {
+    fill: #888;
+    stroke: #888;
+    stroke-width: 1.5px;
+}
+
+.link {
+    fill: none;
+    stroke: #888;
+    stroke-width: 1.5px;
+}
+
+.children-number {
+    fill: white;
+    stroke: #888;
+    stroke-width: 1.5px;
+}
