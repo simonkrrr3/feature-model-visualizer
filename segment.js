@@ -34,11 +34,12 @@ function toPath({x, y}) {
 function drawSegment(node, radius) {
     if (node.children && node.children.length > 1) {
         var firstChild = node.children[0];
-        // var lastChild = node.children[node.children.length - 1]; Unnecessary because of symmetry
+        var lastChild = node.children[node.children.length - 1];
 
         var bottom_rect = {x: node.x, y: node.y + rect_height };
-        var angle = cartesianToAngle(bottom_rect, firstChild);
-        return createPathDOfSegment({x: 0, y: rect_height}, radius, angle, 180 - angle);
+        var startAngle = cartesianToAngle(bottom_rect, firstChild);
+        var endAngle = cartesianToAngle(bottom_rect, lastChild);
+        return createPathDOfSegment({x: 0, y: rect_height}, radius, startAngle, endAngle);
     }
 
     return null;

@@ -20,8 +20,8 @@ let littleModel = `
                 <feature name="Villager"/>
                 <feature name="Warrior"/>
             </or>
-            <and name="HarvestSkills">
-                <feature mandatory="true" name="Reaping"/>
+            <and abstract="true" name="HarvestSkills">
+                <feature mandatory="false" name="Reaping"/>
                 <feature mandatory="true" name="Hauling"/>
                 <feature mandatory="true" name="Threshing"/>
             </and>
@@ -30523,9 +30523,11 @@ let hugeModel = `
 </featureModel>
 `
 
-hugeModel = hugeModel.split('\n').splice(1).join('\n');
+let currentModel = littleModel;
+
+currentModel = currentModel.split('\n').splice(1).join('\n');
 const parser = new DOMParser();
-const xmlDocument = parser.parseFromString(hugeModel, "text/xml")
+const xmlDocument = parser.parseFromString(currentModel, "text/xml")
 
 const struct = xmlDocument.querySelector('struct');
 
@@ -30534,14 +30536,14 @@ function xmlToJson(struct) {
 
     for (child of struct.childNodes) {
         if (child.tagName) {
-            let toAppend = 
-                {
-                    name: child.getAttribute('name'),
-                    groupType: child.tagName,
-                    mandatory: !!child.getAttribute('mandatory'),
-                }
+            let toAppend = {
+                name: child.getAttribute('name'),
+                groupType: child.tagName,
+                mandatory: !!child.getAttribute('mandatory'),
+                abstract: !!child.getAttribute('abstract')
+            };
 
-            if (child.childNodes && child.childNodes.length) {
+            if (child.tagName !== 'feature') {
                 toAppend.children = xmlToJson(child);
             }
 
@@ -30552,4 +30554,4 @@ function xmlToJson(struct) {
     return toReturn;
 }
 
-var littleModelJson = (xmlToJson(struct))[0];
+var jsonModel = (xmlToJson(struct))[0];

@@ -7,7 +7,7 @@ const rect_height = 35;
 
 const circle_radius = 6;
 
-// Radius of the segment that represents the 'alternative' and 'and' groups.
+// Radius of the segment that represents the 'alt' and 'and' groups.
 const segment_radius = 40;
 
 const letter_width = 10;
@@ -33,7 +33,7 @@ const flexLayout = d3.flextree()
     .nodeSize((node) => [calcRectWidth(node) + space_between_nodes, rect_height])
     .spacing((nodeA, nodeB) => nodeA.path(nodeB).length);
 
-const root = d3.hierarchy(littleModelJson, (d) => d.children);
+const root = d3.hierarchy(jsonModel, (d) => d.children);
 root.x0 = 0;
 root.y0 = 0;
 
@@ -42,21 +42,21 @@ update(root);
 
 
 function update(source) {
-    var treeData = flexLayout(root);
+    const treeData = flexLayout(root);
 
     // nodes
-    var nodes = treeData.descendants();
+    const nodes = treeData.descendants();
     nodes.forEach((d) => { 
         d.y = d.depth * 180;
     });
     
-    var node = svg
+    const node = svg
         .selectAll('g.node')
         .data(nodes, (d) => d.id || (d.id = ++node_id_counter));
 
 
     // Enter new nodes
-    var nodeEnter = node
+    const nodeEnter = node
         .enter()
         .append('g')
         .classed('node', true)
@@ -64,6 +64,7 @@ function update(source) {
         .on('click', collapse);
     nodeEnter
         .append('rect')
+        .classed('abstract', (d) => d.abstract)
         .attr('height', 0)
         .attr('width', 0)
         .attr('x', (d) => -calcRectWidth(d) / 2);
@@ -74,36 +75,38 @@ function update(source) {
         .text((d) => d.data.name);
     nodeEnter
         .append('circle')
-        .classed('or-group-circle', true)
+        .classed('and-group-circle', true)
         .attr('r', 0);
     nodeEnter
         .append('path')
-        .classed('alternative-group', true)
+        .classed('alt-group', true)
         .attr('d', (node) => drawSegment(node, 0))
-        .attr('opacity', (d) => d.data.groupType == 'alternative' ? 1 : 0);
+        .attr('opacity', (d) => d.data.groupType == 'alt' ? 1 : 0);
     nodeEnter
         .append('path')
-        .classed('and-group', true)
+        .classed('or-group', true)
         .attr('d', (node) => drawSegment(node, 0))
-        .attr('opacity', (d) => d.data.groupType == 'and' ? 1 : 0);
-    nodeEnter
+        .attr('opacity', (d) => d.data.groupType == 'or' ? 1 : 0);
+    /*nodeEnter
         .append('circle')
         .classed('children-number', true)
         .attr('transform', ((d) => 'translate(0, ' + rect_height + ')'))
         //.attr('opacity', ((d) => d._children ? 1 : 0))
-        .attr('r', 15);
+        .attr('r', 15);*/
 
 
 
 
     // Update nodes
-    var nodeUpdate = nodeEnter.merge(node);
+    const nodeUpdate = nodeEnter.merge(node);
     nodeUpdate
         .transition()
         .duration(duration)
         .attr('transform', (d) => 'translate(' + d.x + ', ' + d.y + ')')
     nodeUpdate
         .select('rect')
+        //.classed('none-abstract', (d) => d.data.abstract)
+        .classed('abstract', (d) => d.data.abstract)
         .attr('height', rect_height)
         .attr('width', (d) => calcRectWidth(d));
     nodeUpdate
@@ -111,28 +114,28 @@ function update(source) {
         .attr('font-size', letter_height)
         .style('fill-opacity', 1);
     nodeUpdate
-        .select('.or-group-circle')
+        .select('.and-group-circle')
         .attr('r', circle_radius)
-        .classed('optional-or-group-circle', (d) => d.parent && d.parent.data.groupType == 'or' && !d.data.mandatory)
-        .classed('mandatory-or-group-circle', (d) => d.parent && d.parent.data.groupType == 'or' && d.data.mandatory);
+        .classed('optional-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && !d.data.mandatory)
+        .classed('mandatory-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && d.data.mandatory);
     nodeUpdate
-        .select('.alternative-group')
+        .select('.alt-group')
         .transition()
         .duration(duration)
         .attr('d', (node) => drawSegment(node, segment_radius));
     nodeUpdate
-        .select('.and-group')
+        .select('.or-group')
         .transition()
         .duration(duration)
         .attr('d', (node) => drawSegment(node, segment_radius));
-    nodeUpdate
+    /*nodeUpdate
         .select('.children-number')
-        .attr('opacity', ((d) => d.children == null ? 0 : 0));
+        .attr('opacity', ((d) => d.children == null ? 0 : 0));*/
 
 
 
     // Remove old nodes
-    var nodeExit = node
+    const nodeExit = node
         .exit()
         .transition()
         .duration(duration)
@@ -147,7 +150,7 @@ function update(source) {
         .attr('font-size', 0)
         .style('fill-opacity', 0);
     nodeExit
-        .select('.or-group-circle')
+        .select('.and-group-circle')
         .attr('r', 0);
     
 
@@ -159,13 +162,13 @@ function update(source) {
                 L ${d.x} ${d.y}`;
     }
 
-    var links = treeData.descendants().slice(1);
+    const links = treeData.descendants().slice(1);
     
-    var link = svg
+    const link = svg
         .selectAll('path.link')
         .data(links, (d) => d.id);
 
-    var linkEnter = link
+    const linkEnter = link
         .enter()
         .insert('path', 'g')
         .classed('link', true)
@@ -174,13 +177,13 @@ function update(source) {
             return diagonal(o, o);
         });
 
-    var linkUpdate = linkEnter.merge(link);
+    const linkUpdate = linkEnter.merge(link);
     linkUpdate
         .transition()
         .duration(duration)
         .attr('d', (d) => diagonal(d.parent, d));
 
-    var linkExit = link
+    const linkExit = link
         .exit()
         .transition()
         .duration(duration)
