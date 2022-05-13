@@ -30539,8 +30539,8 @@ function xmlToJson(struct) {
             let toAppend = {
                 name: child.getAttribute('name'),
                 groupType: child.tagName,
-                mandatory: !!child.getAttribute('mandatory'),
-                abstract: !!child.getAttribute('abstract')
+                mandatory: child.getAttribute('mandatory') === 'true',
+                abstract: child.getAttribute('abstract') === 'true'
             };
 
             if (child.tagName !== 'feature') {

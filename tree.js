@@ -141,7 +141,7 @@ function update(source) {
         .exit()
         //.transition()
         //.duration(duration)
-        .attr('transform', () => 'translate(' + source.x + ', ' + source.y + ')')
+        //.attr('transform', () => 'translate(' + source.x + ', ' + source.y + ')')
         .remove();
     /*nodeExit
         .select('rect')
