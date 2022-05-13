@@ -60,32 +60,34 @@ function update(source) {
         .enter()
         .append('g')
         .classed('node', true)
-        .attr('transform', (() => 'translate(' + source.x0 + ', ' + source.y0 + ')'))
+        .attr('transform', ((d) => 'translate(' + d.x + ', ' + d.y + ')'))
         .on('click', collapse);
     nodeEnter
         .append('rect')
         .classed('abstract', (d) => d.abstract)
-        .attr('height', 0)
-        .attr('width', 0)
+        .attr('height', rect_height)
+        .attr('width', (d) => calcRectWidth(d))
         .attr('x', (d) => -calcRectWidth(d) / 2);
     nodeEnter
         .append('text')
         .attr('dy', rect_height/2 + 5.5)
-        .attr('font-size', 0)
+        .attr('font-size', letter_height)
         .text((d) => d.data.name);
     nodeEnter
         .append('circle')
         .classed('and-group-circle', true)
-        .attr('r', 0);
+        .attr('r', circle_radius)
+        .classed('optional-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && !d.data.mandatory)
+        .classed('mandatory-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && d.data.mandatory);
     nodeEnter
         .append('path')
         .classed('alt-group', true)
-        .attr('d', (node) => drawSegment(node, 0))
+        .attr('d', (node) => drawSegment(node, segment_radius))
         .attr('opacity', (d) => d.data.groupType == 'alt' ? 1 : 0);
     nodeEnter
         .append('path')
         .classed('or-group', true)
-        .attr('d', (node) => drawSegment(node, 0))
+        .attr('d', (node) => drawSegment(node, segment_radius))
         .attr('opacity', (d) => d.data.groupType == 'or' ? 1 : 0);
     /*nodeEnter
         .append('circle')
@@ -100,8 +102,8 @@ function update(source) {
     // Update nodes
     const nodeUpdate = nodeEnter.merge(node);
     nodeUpdate
-        .transition()
-        .duration(duration)
+        //.transition()
+        //.duration(duration)
         .attr('transform', (d) => 'translate(' + d.x + ', ' + d.y + ')')
     nodeUpdate
         .select('rect')
@@ -120,13 +122,13 @@ function update(source) {
         .classed('mandatory-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && d.data.mandatory);
     nodeUpdate
         .select('.alt-group')
-        .transition()
-        .duration(duration)
+        //.transition()
+        //.duration(duration)
         .attr('d', (node) => drawSegment(node, segment_radius));
     nodeUpdate
         .select('.or-group')
-        .transition()
-        .duration(duration)
+        //.transition()
+        //.duration(duration)
         .attr('d', (node) => drawSegment(node, segment_radius));
     /*nodeUpdate
         .select('.children-number')
@@ -137,11 +139,11 @@ function update(source) {
     // Remove old nodes
     const nodeExit = node
         .exit()
-        .transition()
-        .duration(duration)
+        //.transition()
+        //.duration(duration)
         .attr('transform', () => 'translate(' + source.x + ', ' + source.y + ')')
         .remove();
-    nodeExit
+    /*nodeExit
         .select('rect')
         .attr('height', 0)
         .attr('width', 0);
@@ -151,7 +153,7 @@ function update(source) {
         .style('fill-opacity', 0);
     nodeExit
         .select('.and-group-circle')
-        .attr('r', 0);
+        .attr('r', 0);*/
     
 
 
@@ -172,25 +174,26 @@ function update(source) {
         .enter()
         .insert('path', 'g')
         .classed('link', true)
-        .attr('d', () => {
+        /*.attr('d', () => {
             var o = { x: source.x0, y: source.y };
             return diagonal(o, o);
-        });
+        });*/
+        .attr('d', (d) => diagonal(d.parent, d));
 
     const linkUpdate = linkEnter.merge(link);
     linkUpdate
-        .transition()
-        .duration(duration)
+        //.transition()
+        //.duration(duration)
         .attr('d', (d) => diagonal(d.parent, d));
 
     const linkExit = link
         .exit()
-        .transition()
+        /*.transition()
         .duration(duration)
         .attr('d', (d) => { 
             var o = { x: source.x, y: source.y};
             return diagonal(o, o);
-        })
+        })*/
         .remove();
 
 
