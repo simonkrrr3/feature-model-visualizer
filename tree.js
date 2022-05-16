@@ -38,13 +38,17 @@ const root = d3.hierarchy(jsonModel, (d) => d.children);
 root.x0 = 0;
 root.y0 = 0;
 
+root.descendants().forEach((d) => {
+    if (d.data.isCollapsed) {
+        d._children = d.children;
+        d.children = null;
+    }
+});
+
 update(root);
-
-
 
 function update(source) {
     const treeData = flexLayout(root);
-    console.log(treeData);
 
     // nodes
     const nodes = treeData.descendants();
