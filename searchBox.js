@@ -2,7 +2,7 @@ document.querySelector('#feature-search').addEventListener('keydown', (e) => {
     if (e.keyCode === 13) { 
         allNodes.forEach((d) => d.data.isSearched = false);
         
-        const paths = searchTree(root, e.target.value, []);        
+        const paths = searchTree(rootFeature, e.target.value, []);        
         paths.forEach((d) => d.data.isSearched = true);
         allNodes.forEach((d) => {
             d.data.isCollapsed = !d.data.isSearched;
