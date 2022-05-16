@@ -44,6 +44,7 @@ update(root);
 
 function update(source) {
     const treeData = flexLayout(root);
+    console.log(treeData);
 
     // nodes
     const nodes = treeData.descendants();
@@ -227,7 +228,7 @@ function update(source) {
 }
 
 // Click event
-function collapse(event, d) {
+function collapse(d) {
     if (d.children) {
         d._children = d.children;
         d.children = null;
@@ -240,7 +241,7 @@ function collapse(event, d) {
 
 function collapseShortcut(event, node) {
     if (event.getModifierState("Control")) {
-        collapse(event, node);
+        collapse(node);
     }
 }
 
