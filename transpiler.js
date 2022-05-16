@@ -30523,6 +30523,48 @@ let hugeModel = `
 </featureModel>
 `
 
+class Node {
+    constructor(name, groupType, mandatory, abstract, children) {
+        this.name = name;
+        this.children = children;
+        this.groupType = groupType;
+        this.isMandatory = mandatory;
+        this.isAbstract = abstract;
+        this.isLeaf = children.length === 0;
+        this.isCollapsed = this.childrenCount() > 2;
+    }
+
+    childrenCount() {
+        if (this.isLeaf) {
+            return 0 ;
+        } else {
+            return this.children.length; 
+        }
+    }
+
+    totalSubnodesCount() {
+        if (this.isLeaf) {
+            return 0;
+        } else {
+            let totalSubnodesCount = this.children.length;
+            this.children.forEach((node) => { 
+                totalSubnodesCount += node.totalSubnodesCount();
+            });
+            return totalSubnodesCount;
+        }
+    }
+
+    collapse() {
+        this.isCollapsed = !this.isCollapsed;
+    }
+
+    getNonCollapsedChildren() {
+        return this.isCollapsed ? [] : this.children;
+    }
+}
+
+
+
 let currentModel = littleModel;
 
 currentModel = currentModel.split('\n').splice(1).join('\n');
@@ -30536,17 +30578,13 @@ function xmlToJson(struct) {
 
     for (child of struct.childNodes) {
         if (child.tagName) {
-            let toAppend = {
-                name: child.getAttribute('name'),
-                groupType: child.tagName,
-                mandatory: child.getAttribute('mandatory') === 'true',
-                abstract: child.getAttribute('abstract') === 'true'
-            };
-
-            if (child.tagName !== 'feature') {
-                toAppend.children = xmlToJson(child);
-            }
-
+            let toAppend = new Node(
+                child.getAttribute('name'), 
+                child.tagName, 
+                child.getAttribute('mandatory') === 'true', 
+                child.getAttribute('abstract') === 'true',
+                xmlToJson(child)
+            );
             toReturn.push(toAppend);
         }
     }

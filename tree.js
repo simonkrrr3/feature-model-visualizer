@@ -13,7 +13,7 @@ const segment_radius = 40;
 const letter_width = 10;
 const letter_height = 16;
 
-const space_between_nodes = 10;
+const space_between_nodes = 20;
 
 var node_id_counter = 0;
 const duration = 500;
@@ -66,7 +66,7 @@ function update(source) {
         .on('click', (e, d) => collapseShortcut(e, d));
     nodeEnter
         .append('rect')
-        .classed('abstract', (d) => d.abstract)
+        .classed('abstract', (d) => d.isAbstract)
         .attr('height', rect_height)
         .attr('width', (d) => calcRectWidth(d))
         .attr('x', (d) => -calcRectWidth(d) / 2);
@@ -79,8 +79,8 @@ function update(source) {
         .append('circle')
         .classed('and-group-circle', true)
         .attr('r', circle_radius)
-        .classed('optional-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && !d.data.mandatory)
-        .classed('mandatory-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && d.data.mandatory);
+        .classed('mandatory-and-group-circle', (d) =>  d.parent && d.parent.data.groupType === 'and' && d.data.isMandatory)
+        .classed('optional-and-group-circle', (d) => d.parent && d.parent.data.groupType === 'and' && !d.data.isMandatory);
     nodeEnter
         .append('path')
         .classed('alt-group', true)
@@ -91,12 +91,23 @@ function update(source) {
         .classed('or-group', true)
         .attr('d', (node) => drawSegment(node, segment_radius))
         .attr('opacity', (d) => d.data.groupType == 'or' ? 1 : 0);
-    /*nodeEnter
+    
+    /*const childNodeNumberEnter = nodeEnter
+        .filter((d) => !d.isLeaf)
+        .append('g')
+        .classed('child-node-number', true)
+        .attr('transform', ((d) => 'translate(' + calcRectWidth(d)/2 + ', ' + rect_height + ')'));
+
+    childNodeNumberEnter
         .append('circle')
-        .classed('children-number', true)
-        .attr('transform', ((d) => 'translate(0, ' + rect_height + ')'))
-        //.attr('opacity', ((d) => d._children ? 1 : 0))
-        .attr('r', 15);*/
+        .attr('r', 15);
+
+    childNodeNumberEnter
+        .append('text')
+        .classed('child-node-number-text', true)
+        .attr('dy', 2.5)
+        .attr('font-size', letter_height - 7)
+        .text((d) => d.data.childrenCount() + '|10');*/
 
 
 
@@ -104,13 +115,10 @@ function update(source) {
     // Update nodes
     const nodeUpdate = nodeEnter.merge(node);
     nodeUpdate
-        //.transition()
-        //.duration(duration)
         .attr('transform', (d) => 'translate(' + d.x + ', ' + d.y + ')')
     nodeUpdate
         .select('rect')
-        //.classed('none-abstract', (d) => d.data.abstract)
-        .classed('abstract', (d) => d.data.abstract)
+        .classed('abstract', (d) => d.data.isAbstract)
         .attr('height', rect_height)
         .attr('width', (d) => calcRectWidth(d));
     nodeUpdate
@@ -120,21 +128,31 @@ function update(source) {
     nodeUpdate
         .select('.and-group-circle')
         .attr('r', circle_radius)
-        .classed('optional-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && !d.data.mandatory)
-        .classed('mandatory-and-group-circle', (d) => d.parent && d.parent.data.groupType == 'and' && d.data.mandatory);
+        .classed('mandatory-and-group-circle', (d) => d.parent && d.parent.data.groupType === 'and' && d.data.isMandatory)
+        .classed('optional-and-group-circle', (d) => d.parent && d.parent.data.groupType === 'and' && !d.data.isMandatory);
     nodeUpdate
         .select('.alt-group')
-        //.transition()
-        //.duration(duration)
         .attr('d', (node) => drawSegment(node, segment_radius));
     nodeUpdate
         .select('.or-group')
-        //.transition()
-        //.duration(duration)
         .attr('d', (node) => drawSegment(node, segment_radius));
-    /*nodeUpdate
-        .select('.children-number')
-        .attr('opacity', ((d) => d.children == null ? 0 : 0));*/
+    
+    const childNodeNumberUpdate = nodeUpdate
+        .filter((d) => !d.data.isLeaf)
+        .append('g')
+        .classed('child-node-number', true)
+        .attr('transform', ((d) => 'translate(' + calcRectWidth(d)/2 + ', ' + rect_height + ')'));
+
+    childNodeNumberUpdate
+        .append('circle')
+        .attr('r', 15);
+
+    childNodeNumberUpdate
+        .append('text')
+        .classed('child-node-number-text', true)
+        .attr('dy', 2.5)
+        .attr('font-size', letter_height - 7)
+        .text((d) => { return d.data.childrenCount() + '|' + d.data.totalSubnodesCount(); });
 
 
 

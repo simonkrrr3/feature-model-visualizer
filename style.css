@@ -90,7 +90,7 @@ rect.abstract {
   stroke-width: 1.5px;
 }
 
-.children-number {
+.child-node-number > circle {
   fill: white;
   stroke: #888;
   stroke-width: 1.5px;
