@@ -40,16 +40,22 @@ root.y0 = 0;
 
 const allNodes = root.descendants();
 
-root.descendants().forEach((d) => {
-    if (d.data.isCollapsed) {
-        d._children = d.children;
-        d.children = null;
-    }
-});
+update();
 
-update(root);
+function update() {
+    allNodes.forEach((d) => {
+        if (!d.data.isLeaf) {
+            const children = d.children ? d.children : d._children;
+            if (d.data.isCollapsed) {
+                d._children = children;
+                d.children = null;
+            } else {
+                d.children = children;
+                d._children = null;
+            }
+        }
+    });
 
-function update(source) {
     const treeData = flexLayout(root);
 
     // nodes
@@ -244,12 +250,13 @@ function collapse(d) {
         d.children = d._children;
         d._children = null;
     }
-    update(d);
+    update();
 }
 
 function collapseShortcut(event, node) {
     if (event.getModifierState("Control")) {
-        collapse(node);
+        node.data.collapse();
+        update();
     }
 }
 

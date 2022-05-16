@@ -1,6 +1,7 @@
 function collapseAction(node) {
-    collapse(node)
+    node.data.collapse();
     closeContextMenu();
+    update();
 }
 
 function contextMenu(e, node) {

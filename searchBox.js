@@ -6,15 +6,8 @@ document.querySelector('#feature-search').addEventListener('keydown', (e) => {
         paths.forEach((d) => d.data.isSearched = true);
         allNodes.forEach((d) => {
             d.data.isCollapsed = !d.data.isSearched;
-            if (d.data.isCollapsed) {
-                d._children = d.children;
-                d.children = null;
-            } else if (d._children) {
-                d.children = d._children;
-                d._children = null;
-            }
         });
-        update(root);
+        update();
     }
 })
 
