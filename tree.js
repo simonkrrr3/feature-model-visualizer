@@ -38,6 +38,8 @@ const root = d3.hierarchy(jsonModel, (d) => d.children);
 root.x0 = 0;
 root.y0 = 0;
 
+const allNodes = root.descendants();
+
 root.descendants().forEach((d) => {
     if (d.data.isCollapsed) {
         d._children = d.children;
@@ -124,6 +126,7 @@ function update(source) {
     nodeUpdate
         .select('rect')
         .classed('abstract', (d) => d.data.isAbstract)
+        .classed('is-searched-feature', (d) => d.data.isSearched)
         .attr('height', rect_height)
         .attr('width', (d) => calcRectWidth(d));
     nodeUpdate
@@ -209,6 +212,7 @@ function update(source) {
     linkUpdate
         //.transition()
         //.duration(duration)
+        .classed('is-searched-link', (d) => d.data.isSearched)
         .attr('d', (d) => diagonal(d.parent, d));
 
     const linkExit = link

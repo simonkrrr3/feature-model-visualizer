@@ -40,6 +40,10 @@
   vertical-align: middle;
 }
 
+.node .is-searched-feature {
+  fill: lightcoral;
+}
+
 .node rect {
   fill: #ccccff;
   stroke: #9999bf;
@@ -87,6 +91,12 @@ rect.abstract {
 .link {
   fill: none;
   stroke: #888;
+  stroke-width: 1.5px;
+}
+
+.is-searched-link {
+  fill: none;
+  stroke: lightcoral;
   stroke-width: 1.5px;
 }
 
