@@ -19,13 +19,14 @@ var node_id_counter = 0;
 const duration = 500;
 
 const svg = d3
-    .select('.container')
+    .select('.svg-container')
     .append('svg')
+    .on('click', closeContextMenu)
     .attr('width', svg_width + svg_margin.right + svg_margin.left)
     .attr('height', svg_height + svg_margin.top + svg_margin.bottom)
     .call(d3.zoom().scaleExtent([0.1, 8]).on("zoom", (event, d) => {
         svg.attr("transform", event.transform)
-     }))
+    }))
     .append('g')
     .attr('transform', 'translate(' + (svg_margin.left + svg_width / 2) + ', ' + svg_margin.top + ')');
 
@@ -46,10 +47,10 @@ function update(source) {
 
     // nodes
     const nodes = treeData.descendants();
-    nodes.forEach((d) => { 
+    nodes.forEach((d) => {
         d.y = d.depth * 180;
     });
-    
+
     const node = svg
         .selectAll('g.node')
         .data(nodes, (d) => d.id || (d.id = ++node_id_counter));
@@ -61,7 +62,7 @@ function update(source) {
         .append('g')
         .classed('node', true)
         .attr('transform', ((d) => 'translate(' + d.x + ', ' + d.y + ')'))
-        .on('click', collapse);
+        .on('contextmenu', (e, d) => contextMenu(e, d));
     nodeEnter
         .append('rect')
         .classed('abstract', (d) => d.abstract)
@@ -70,7 +71,7 @@ function update(source) {
         .attr('x', (d) => -calcRectWidth(d) / 2);
     nodeEnter
         .append('text')
-        .attr('dy', rect_height/2 + 5.5)
+        .attr('dy', rect_height / 2 + 5.5)
         .attr('font-size', letter_height)
         .text((d) => d.data.name);
     nodeEnter
@@ -154,7 +155,7 @@ function update(source) {
     nodeExit
         .select('.and-group-circle')
         .attr('r', 0);*/
-    
+
 
 
     // Links
@@ -165,7 +166,7 @@ function update(source) {
     }
 
     const links = treeData.descendants().slice(1);
-    
+
     const link = svg
         .selectAll('path.link')
         .data(links, (d) => d.id);
@@ -204,17 +205,18 @@ function update(source) {
     });
 
 
-    // Click event
-    function collapse(event, d) {
-        if (d.children) {
-            d._children = d.children;
-            d.children = null;
-        } else {
-            d.children = d._children;
-            d._children = null;
-        }
-        update(d);
+}
+
+// Click event
+function collapse(event, d) {
+    if (d.children) {
+        d._children = d.children;
+        d.children = null;
+    } else {
+        d.children = d._children;
+        d._children = null;
     }
+    update(d);
 }
 
 function calcRectWidth(node) {
