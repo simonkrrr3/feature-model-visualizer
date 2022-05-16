@@ -62,7 +62,8 @@ function update(source) {
         .append('g')
         .classed('node', true)
         .attr('transform', ((d) => 'translate(' + d.x + ', ' + d.y + ')'))
-        .on('contextmenu', (e, d) => contextMenu(e, d));
+        .on('contextmenu', (e, d) => contextMenu(e, d))
+        .on('click', (e, d) => collapseShortcut(e, d));
     nodeEnter
         .append('rect')
         .classed('abstract', (d) => d.abstract)
@@ -217,6 +218,12 @@ function collapse(event, d) {
         d._children = null;
     }
     update(d);
+}
+
+function collapseShortcut(event, node) {
+    if (event.getModifierState("Control")) {
+        collapse(event, node);
+    }
 }
 
 function calcRectWidth(node) {
