@@ -64,28 +64,33 @@ function updateSvg() {
         .on('contextmenu', (e, d) => contextMenu(e, d)) // Open contextmenu with right-click on node.
         .on('click', (e, d) => collapseShortcut(e, d)); // Collapse node with Ctrl + left-click on node.
 
-    nodeEnter
+    const rectAndText = nodeEnter
+        .append('g')
+        .classed('rect-and-text', true);
+    rectAndText
         .append('rect')
         .attr('x', (d) => -calcRectWidth(d) / 2)
         .attr('height', RECT_HEIGHT)
         .attr('width', (d) => calcRectWidth(d));
-    nodeEnter
+    rectAndText
         .append('text')
         .attr('dy', RECT_HEIGHT / 2 + 5.5)
         .attr('font-size', FEATURE_FONT_SIZE)
         .text((d) => d.data.name);
+
     nodeEnter
+        .filter((node) => !node.data.isRoot && node.parent.data.isAnd())
         .append('circle')
         .classed('and-group-circle', true)
         .attr('r', MANDATORY_CIRCLE_RADIUS);
     nodeEnter
+        .filter((node) => node.data.isAlt())
         .append('path')
-        .classed('alt-group', true)
-        .attr('opacity', (d) => d.data.groupType == 'alt' ? 1 : 0);
+        .classed('alt-group', true);
     nodeEnter
+        .filter((node) => node.data.isOr())
         .append('path')
-        .classed('or-group', true)
-        .attr('opacity', (d) => d.data.groupType == 'or' ? 1 : 0);
+        .classed('or-group', true);
 
     // Enter circle with number of direct and total children.
     const childrenCountEnter = nodeEnter
@@ -109,13 +114,14 @@ function updateSvg() {
     nodeUpdate
         .attr('transform', (node) => 'translate(' + node.x + ', ' + node.y + ')');
     nodeUpdate
+        .select('.rect-and-text')
         .select('rect')
         .classed('abstract', (node) => node.data.isAbstract)
         .classed('is-searched-feature', (node) => node.data.isSearched)
     nodeUpdate
         .select('.and-group-circle')
-        .classed('mandatory-and-group-circle', (node) => node.parent && node.parent.data.groupType === 'and' && node.data.isMandatory)
-        .classed('optional-and-group-circle', (node) => node.parent && node.parent.data.groupType === 'and' && !node.data.isMandatory);
+        .classed('mandatory-and-group-circle', (node) => node.parent && node.parent.data.isAnd() && node.data.isMandatory)
+        .classed('optional-and-group-circle', (node) => node.parent && node.parent.data.isAnd() && !node.data.isMandatory);
     nodeUpdate
         .select('.alt-group')
         .attr('d', (node) => createGroupSegment(node, GROUP_SEGMENT_RADIUS));
@@ -153,7 +159,7 @@ function updateSvg() {
 
 // Collapses all children of the specifed node with shortcut CTRL + left-click.
 function collapseShortcut(event, node) {
-    if (event.getModifierState("Control")) {
+    if (event.getModifierState('Control')) {
         node.data.collapse();
         updateSvg();
     }

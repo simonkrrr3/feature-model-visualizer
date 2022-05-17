@@ -1,8 +1,9 @@
 class FeatureNode {
-    constructor(name, groupType, mandatory, abstract, children) {
+    constructor(name, groupType, isRoot, mandatory, abstract, children) {
         this.name = name;
         this.children = children;
         this.groupType = groupType;
+        this.isRoot = isRoot;
         this.isMandatory = mandatory;
         this.isAbstract = abstract;
         this.isLeaf = children.length === 0;
@@ -35,5 +36,17 @@ class FeatureNode {
 
     getNonCollapsedChildren() {
         return this.isCollapsed ? [] : this.children;
+    }
+
+    isAnd() {
+        return this.groupType === 'and';
+    }
+    
+    isOr() {
+        return this.groupType === 'or';
+    }
+    
+    isAlt() {
+        return this.groupType === 'alt';
     }
 }
