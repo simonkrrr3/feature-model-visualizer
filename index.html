@@ -2,23 +2,25 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>D3 SVG - littleModel</title>
+    <title>Feature-Model-Visualizer</title>
 
     <link rel="stylesheet" href="style.css" />
-    <script src="transpiler.js" defer></script>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-hierarchy@3"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-flextree@2.0.0/build/d3-flextree.min.js"></script>
 
     <!-- CSS only -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 
+    <script src="constants.js" defer></script>
+    <script src="featureNode.js" defer></script>
+    <script src="featureModelData.js" defer></script>
+    <script src="transpiler.js" defer></script>
     <script src="contextMenu.js" defer></script>
-    <script src="segment.js" defer></script>
-    <script src="treedata.js" defer></script>
-    <script src="tree.js" defer></script>
-    <script src="searchBox.js" defer></script>
+    <script src="createSvgPaths.js" defer></script>
+    <script src="featureModel.js" defer></script>
+    <script src="searchFeature.js" defer></script>
   </head>
 
   <body>

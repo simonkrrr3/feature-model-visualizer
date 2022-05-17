@@ -1,34 +1,12 @@
-const svg_margin = { top: 20, right: 90, bottom: 20, left: 90 };
-const svg_width = window.innerWidth - svg_margin.left - svg_margin.right;
-const svg_height = window.innerHeight - svg_margin.top - svg_margin.bottom;
-
-const rect_margin = { right: 5, left: 5 };
-const rect_height = 35;
-
-const circle_radius = 6;
-
-// Radius of the segment that represents the 'alt' and 'and' groups.
-const segment_radius = 40;
-
-const letter_width = 10;
-const letter_height = 16;
-
-const spaceBetweenNodesHorizontally = 20;
-const spaceBetweenNodesVertically = 160;
-
-let node_id_counter = 0;
-
-
-
 // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
 const flexLayout = d3.flextree()
-    .nodeSize((node) => [calcRectWidth(node) + spaceBetweenNodesHorizontally, rect_height + spaceBetweenNodesVertically])
+    .nodeSize((node) => [calcRectWidth(node) + SPACE_BETWEEN_NODES_HORIZONTALLY, RECT_HEIGHT + SPACE_BETWEEN_NODES_VERTICALLY])
     .spacing((nodeA, nodeB) => nodeA.path(nodeB).length);
 
 // Create root-feature-node with d3 and the data of the feature-model.
-const rootFeature = d3.hierarchy(jsonModel, (d) => d.children);
+const rootNode = d3.hierarchy(featureModelRawData, (d) => d.children);
 
-const allNodes = rootFeature.descendants();
+const allNodes = rootNode.descendants();
 
 
 
@@ -38,7 +16,7 @@ const svg = d3
     .select('.svg-container')
     .append('svg')
     .attr('preserveAspectRatio', 'xMidYMid meet')
-    .attr('viewBox', (-svg_width/2) + ' ' + -svg_margin.top + ' ' + svg_width + ' ' + svg_height)
+    .attr('viewBox', (-SVG_WIDTH/2) + ' ' + -SVG_MARGIN.top + ' ' + SVG_WIDTH + ' ' + SVG_HEIGHT)
     .on('click', closeContextMenu) // Click listener for closing all context-menus.
     .call(d3.zoom().scaleExtent([0.1, 8]).on("zoom", (event) => svgContent.attr('transform', event.transform))); // Zooming and penning.
 
@@ -49,9 +27,9 @@ const svgContent = svg
 
 
 
-update();
+updateSvg();
 
-function update() {
+function updateSvg() {
     // Remove all children from their parents if the parent is collapsed.
     // Otherwise reset the children attribute to temporary saved _children.
     allNodes.forEach((d) => {
@@ -68,14 +46,14 @@ function update() {
     });
 
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
-    const treeData = flexLayout(rootFeature);
+    const treeData = flexLayout(rootNode);
     
     // Get all nodes that do not have a collapsed parent.
     const visibleNodes = treeData.descendants();
 
     const node = svgContent
         .selectAll('g.node')
-        .data(visibleNodes, (d) => d.id || (d.id = ++node_id_counter));
+        .data(visibleNodes, (d) => d.id || (d.id = ++nodeIdCounter));
 
 
     // Enter new nodes
@@ -89,17 +67,17 @@ function update() {
     nodeEnter
         .append('rect')
         .attr('x', (d) => -calcRectWidth(d) / 2)
-        .attr('height', rect_height)
+        .attr('height', RECT_HEIGHT)
         .attr('width', (d) => calcRectWidth(d));
     nodeEnter
         .append('text')
-        .attr('dy', rect_height / 2 + 5.5)
-        .attr('font-size', letter_height)
+        .attr('dy', RECT_HEIGHT / 2 + 5.5)
+        .attr('font-size', FEATURE_FONT_SIZE)
         .text((d) => d.data.name);
     nodeEnter
         .append('circle')
         .classed('and-group-circle', true)
-        .attr('r', circle_radius);
+        .attr('r', MANDATORY_CIRCLE_RADIUS);
     nodeEnter
         .append('path')
         .classed('alt-group', true)
@@ -110,19 +88,19 @@ function update() {
         .attr('opacity', (d) => d.data.groupType == 'or' ? 1 : 0);
 
     // Enter circle with number of direct and total children.
-    const childNodeNumberEnter = nodeEnter
+    const childrenCountEnter = nodeEnter
         .filter((node) => !node.data.isLeaf)
         .append('g')
-        .classed('child-node-number', true)
-        .attr('transform', ((node) => 'translate(' + calcRectWidth(node) / 2 + ', ' + rect_height + ')'));
-        childNodeNumberEnter
+        .classed('children-count', true)
+        .attr('transform', ((node) => 'translate(' + calcRectWidth(node) / 2 + ', ' + RECT_HEIGHT + ')'));
+    childrenCountEnter
         .append('circle')
-        .attr('r', 15);
-        childNodeNumberEnter
+        .attr('r', CHILDREN_COUNT_CIRCLE_RADIUS);
+    childrenCountEnter
         .append('text')
-        .classed('child-node-number-text', true)
+        .classed('children-count-text', true)
         .attr('dy', 2.5)
-        .attr('font-size', letter_height - 7)
+        .attr('font-size', CHILREN_COUNT_FONT_SIZE)
         .text((node) => node.data.childrenCount() + '|' + node.data.totalSubnodesCount());
 
 
@@ -140,10 +118,10 @@ function update() {
         .classed('optional-and-group-circle', (node) => node.parent && node.parent.data.groupType === 'and' && !node.data.isMandatory);
     nodeUpdate
         .select('.alt-group')
-        .attr('d', (node) => drawSegment(node, segment_radius));
+        .attr('d', (node) => createGroupSegment(node, GROUP_SEGMENT_RADIUS));
     nodeUpdate
         .select('.or-group')
-        .attr('d', (node) => drawSegment(node, segment_radius));
+        .attr('d', (node) => createGroupSegment(node, GROUP_SEGMENT_RADIUS));
     
         
     // Remove old/invisible nodes.
@@ -153,12 +131,6 @@ function update() {
 
 
     // Links
-    function createLink(src, dest) {
-        var src_y = src.y + rect_height;
-        return `M ${src.x} ${src_y}
-                L ${dest.x} ${dest.y}`;
-    }
-
     const links = treeData.descendants().slice(1);
     const link = svgContent
         .selectAll('path.link')
@@ -183,11 +155,11 @@ function update() {
 function collapseShortcut(event, node) {
     if (event.getModifierState("Control")) {
         node.data.collapse();
-        update();
+        updateSvg();
     }
 }
 
 // Calculates rect-witdh dependent on font-size dynamically.
 function calcRectWidth(node) {
-    return node.data.name.length * letter_width + rect_margin.left + rect_margin.right;
+    return node.data.name.length * (FEATURE_FONT_SIZE * MONOSPACE_HEIGHT_WIDTH_FACTOR) + RECT_MARGIN.left + RECT_MARGIN.right;
 }

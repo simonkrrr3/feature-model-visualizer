@@ -1,7 +1,7 @@
 function collapseAction(node) {
     node.data.collapse();
     closeContextMenu();
-    update();
+    updateSvg();
 }
 
 function contextMenu(e, node) {

@@ -21,8 +21,8 @@ function createPathDOfSegment(centerPoint, radius, startAngle, endAngle) {
     const start = polarToCartesian(centerPoint, radius, startAngle),
           end   = polarToCartesian(centerPoint, radius, endAngle);
     
-    var a = translateToPathD(MOVE, toPath(end), ARC, radius, radius, 0, 0, 1, toPath(start));
-    var b = translateToPathD(LINE, toPath(centerPoint), CLOSE);
+    const a = translateToPathD(MOVE, toPath(end), ARC, radius, radius, 0, 0, 1, toPath(start));
+    const b = translateToPathD(LINE, toPath(centerPoint), CLOSE);
 
     return translateToPathD(a, b, CLOSE);
 }
@@ -31,16 +31,23 @@ function toPath({x, y}) {
     return `${x},${y}`;
 }
 
-function drawSegment(node, radius) {
+function createGroupSegment(node, radius) {
     if (node.children && node.children.length > 1) {
-        var firstChild = node.children[0];
-        var lastChild = node.children[node.children.length - 1];
+        const firstChild = node.children[0];
+        const lastChild = node.children[node.children.length - 1];
 
-        var bottom_rect = {x: node.x, y: node.y + rect_height };
-        var startAngle = cartesianToAngle(bottom_rect, firstChild);
-        var endAngle = cartesianToAngle(bottom_rect, lastChild);
-        return createPathDOfSegment({x: 0, y: rect_height}, radius, startAngle, endAngle);
+        const bottom_rect = {x: node.x, y: node.y + RECT_HEIGHT };
+        const startAngle = cartesianToAngle(bottom_rect, firstChild);
+        const endAngle = cartesianToAngle(bottom_rect, lastChild);
+        return createPathDOfSegment({x: 0, y: RECT_HEIGHT}, radius, startAngle, endAngle);
     }
 
     return null;
+}
+
+
+function createLink(src, dest) {
+    const src_y = src.y + RECT_HEIGHT;
+    return `M ${src.x} ${src_y}
+            L ${dest.x} ${dest.y}`;
 }
