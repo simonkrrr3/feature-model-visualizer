@@ -10,6 +10,7 @@ const allNodes = rootNode.descendants();
 
 
 
+const zoom = d3.zoom().scaleExtent([0.1, 8]).on("zoom", (event) => svgContent.attr('transform', event.transform));
 
 // Create svg-container.
 const svg = d3
@@ -18,11 +19,12 @@ const svg = d3
     .attr('preserveAspectRatio', 'xMidYMid meet')
     .attr('viewBox', (-SVG_WIDTH/2) + ' ' + -SVG_MARGIN.top + ' ' + SVG_WIDTH + ' ' + SVG_HEIGHT)
     .on('click', closeContextMenu) // Click listener for closing all context-menus.
-    .call(d3.zoom().scaleExtent([0.1, 8]).on("zoom", (event) => svgContent.attr('transform', event.transform))); // Zooming and penning.
+    .call(zoom); // Zooming and penning.
 
 // Create svg-content-element.
 const svgContent = svg
     .append('g');
+
 
 
 
@@ -55,6 +57,15 @@ function updateSvg() {
         .selectAll('g.node')
         .data(visibleNodes, (d) => d.id || (d.id = ++nodeIdCounter));
 
+    visibleNodes.forEach(node => {
+        if (node.data.isFocused) {
+            //d3.select('svg > g').attr('transform', `translate(${-node.x}, ${-node.y}) scale(1)`);
+            
+            d3.select('svg').call(zoom.translateBy, -node.x, -node.y);
+            
+            //d3.select('svg').call(d3.zoom().scaleExtent([0.1, 8]).on("zoom", (event) => event.transform, identity));
+        }
+    });
 
     // Enter new nodes
     const nodeEnter = node

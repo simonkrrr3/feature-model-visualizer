@@ -1,6 +1,7 @@
-const currentModel = littleModel; // Choose between littleModel and hugeModel.
+const currentModel = hugeModel; // Choose between littleModel and hugeModel.
 
 function xmlToJson() {
+    const start = performance.now();
     let m = currentModel.split('\n').splice(1).join('\n');
     
     const parser = new DOMParser();
@@ -8,7 +9,9 @@ function xmlToJson() {
 
     const struct = xmlDocument.querySelector('struct');
 
-    return getChildrenOfFeature(struct, true);
+    const toReturn = getChildrenOfFeature(struct, true);
+    console.log(performance.now() - start);
+    return toReturn;    
 }
 
 function getChildrenOfFeature(struct, isRoot) {
@@ -27,7 +30,7 @@ function getChildrenOfFeature(struct, isRoot) {
             toReturn.push(toAppend);
         }
     }
-
+    
     return toReturn;
 }
 
