@@ -19,6 +19,7 @@
                 <feature name="Farmer"/>
                 <feature name="Villager"/>
                 <feature name="Warrior"/>
+                <feature name="Hauling"/>
             </or>
             <and name="HarvestSkills">
                 <feature mandatory="true" name="Reaping"/>

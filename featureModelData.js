@@ -19,6 +19,7 @@ const littleModel = `
             <or mandatory="true" name="Type">
                 <feature name="Farmer"/>
                 <feature name="Villager"/>
+                <feature name="Hauling"/>
                 <feature name="Warrior"/>
             </or>
             <and abstract="true" name="HarvestSkills">
