@@ -45,7 +45,6 @@
 }
 
 .node rect {
-  fill: #ccccff;
   stroke: #9999bf;
   stroke-width: 1px;
 }
@@ -54,10 +53,6 @@
   fill: black;
   font-family: monospace;
   text-anchor: middle;
-}
-
-rect.abstract {
-  fill: #ebebff;
 }
 
 .and-group-circle {

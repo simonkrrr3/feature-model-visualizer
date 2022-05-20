@@ -14,7 +14,7 @@ function contextMenu(e, node) {
     if (node.children || node._children) {
         // Active link
         document.querySelector('#context-menu-collapse').classList.remove('deactivated');
-        document.querySelector('#context-menu-collapse').addEventListener('click', () => collapseAction(node))
+        document.querySelector('#context-menu-collapse').addEventListener('click', () => collapseAction(node));
     } else {
         // Inactive link
         document.querySelector('#context-menu-collapse').classList.add('deactivated');

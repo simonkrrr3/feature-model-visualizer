@@ -17,6 +17,7 @@
     <script src="featureModelData.js" defer></script>
     <script src="transpiler.js" defer></script>
     <script src="contextMenu.js" defer></script>
+    <script src="navigationMenu.js" defer></script>
     <script src="createSvgPaths.js" defer></script>
     <script src="featureModel.js" defer></script>
     <script src="searchFeature.js" defer></script>
@@ -34,7 +35,13 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
+            <li>
+              <a id="navigation-menu-count" class="nav-link" aria-current="page" href="#">Count</a>
+            </li>
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
             <input id="feature-search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          </form>
         </div>
       </div>
     </nav>
@@ -44,10 +51,6 @@
     <div class="context-menu">
       <ul>
         <li id="context-menu-collapse">Collapse</li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
       </ul>
     </div>
   </body>

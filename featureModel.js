@@ -1,3 +1,5 @@
+
+
 // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
 const flexLayout = d3.flextree()
     .nodeSize((node) => [calcRectWidth(node) + SPACE_BETWEEN_NODES_HORIZONTALLY, RECT_HEIGHT + SPACE_BETWEEN_NODES_VERTICALLY])
@@ -27,11 +29,11 @@ const svgContent = svg
 
 
 
-
-
 updateSvg();
 
 function updateSvg() {
+    const start = performance.now();
+
     // Remove all children from their parents if the parent is collapsed.
     // Otherwise reset the children attribute to temporary saved _children.
     allNodes.forEach((d) => {
@@ -59,11 +61,8 @@ function updateSvg() {
 
     visibleNodes.forEach(node => {
         if (node.data.isFocused) {
-            //d3.select('svg > g').attr('transform', `translate(${-node.x}, ${-node.y}) scale(1)`);
-            
-            d3.select('svg').call(zoom.translateBy, -node.x, -node.y);
-            
-            //d3.select('svg').call(d3.zoom().scaleExtent([0.1, 8]).on("zoom", (event) => event.transform, identity));
+            d3.select('svg').call(zoom.translateTo, node.x, node.y);
+            node.data.isFocused = false;
         }
     });
 
@@ -82,7 +81,9 @@ function updateSvg() {
         .append('rect')
         .attr('x', (d) => -calcRectWidth(d) / 2)
         .attr('height', RECT_HEIGHT)
-        .attr('width', (d) => calcRectWidth(d));
+        .attr('width', (d) => calcRectWidth(d))
+        .attr('fill', '#ccccff');
+
     rectAndText
         .append('text')
         .attr('dy', RECT_HEIGHT / 2 + 5.5)
@@ -127,8 +128,8 @@ function updateSvg() {
     nodeUpdate
         .select('.rect-and-text')
         .select('rect')
-        .classed('abstract', (node) => node.data.isAbstract)
         .classed('is-searched-feature', (node) => node.data.isSearched)
+        .attr('fill', (node) => node.data.color ?? (node.data.isAbstract ? '#ebebff' : '#ccccff'));
     nodeUpdate
         .select('.and-group-circle')
         .classed('mandatory-and-group-circle', (node) => node.parent && node.parent.data.isAnd() && node.data.isMandatory)
@@ -166,6 +167,8 @@ function updateSvg() {
     const linkExit = link
         .exit()
         .remove();
+
+    console.log('Rendertime', performance.now() - start);
 }
 
 // Collapses all children of the specifed node with shortcut CTRL + left-click.

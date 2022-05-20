@@ -14,6 +14,7 @@ const littleModel = `
             <alt mandatory="true" name="Mood">
                 <feature name="Friendly"/>
                 <feature name="Enemy"/>
+                <feature name="Villager"/>
             </alt>
             <or mandatory="true" name="Type">
                 <feature name="Farmer"/>
@@ -21,8 +22,9 @@ const littleModel = `
                 <feature name="Warrior"/>
             </or>
             <and abstract="true" name="HarvestSkills">
-                <feature mandatory="false" name="Reaping"/>
+                <feature mandatory="true" name="Reaping"/>
                 <feature mandatory="true" name="Hauling"/>
+                <feature name="Villager"/>
                 <feature mandatory="true" name="Threshing"/>
             </and>
         </and>
@@ -6726,7 +6728,7 @@ const hugeModel = `
                             <feature name="I_3218622207__F_86B4BAE72188"/>
                             <feature name="I_3218622207__F_F414A10641C4"/>
                             <feature name="I_3218622207__F_8C5E76E4752E"/>
-                            <feature name="I_3218622207__F_B1696B30E40E"/>
+                            <feature name="I_1848754303__F_07E0C309AD3D"/>
                             <feature name="I_3218622207__F_89832F1E39AF"/>
                             <feature name="I_3218622207__F_8FA7248766D7"/>
                             <feature name="I_3218622207__F_11A84FA538FC"/>
@@ -6741,7 +6743,7 @@ const hugeModel = `
                             <feature name="I_2909661457__F_7DA9CCB9947F"/>
                             <feature name="I_2909661457__F_6A7109F1F76C"/>
                             <feature name="I_2909661457__F_FF6E2AF771C1"/>
-                            <feature name="I_2909661457__F_BF367ACBE2D6"/>
+                            <feature name="I_1848754303__F_07E0C309AD3D"/>
                             <feature name="I_2909661457__F_034881246080"/>
                             <feature name="I_2909661457__F_A7A388B5043B"/>
                             <feature name="I_2909661457__F_38F8EFE0801F"/>
@@ -6762,7 +6764,7 @@ const hugeModel = `
                             <feature name="I_2089054097__F_7355ACABC68A"/>
                             <feature name="I_2089054097__F_78D0D171A75D"/>
                             <feature name="I_2089054097__F_D2015C9637D6"/>
-                            <feature name="I_2089054097__F_328E8D6D6BE8"/>
+                            <feature name="I_1753500658__F_CEA598BBE151"/>
                             <feature name="I_2089054097__F_765215B82032"/>
                             <feature name="I_2089054097__F_731D8D9152D7"/>
                             <feature name="I_2089054097__F_5461A30D6863"/>
@@ -6796,7 +6798,7 @@ const hugeModel = `
                             <feature name="I_1143201452__F_A18467B3AE9A"/>
                             <feature name="I_1143201452__F_A600725EABE0"/>
                             <feature name="I_1143201452__F_1C4A72C462E6"/>
-                            <feature name="I_1143201452__F_99291A9A4037"/>
+                            <feature name="I_1753500658__F_CEA598BBE151"/>
                             <feature name="I_1143201452__F_722EEC36B476"/>
                             <feature name="I_1143201452__F_79378FA402D6"/>
                             <feature name="I_1143201452__F_585A24B3B81E"/>
@@ -6839,7 +6841,7 @@ const hugeModel = `
                             <feature name="I_2050090012__F_55EE627AECA7"/>
                             <feature name="I_2050090012__F_49037FE4BF9A"/>
                             <feature name="I_2050090012__F_5A825ABB77BA"/>
-                            <feature name="I_2050090012__F_E53CFF825ACB"/>
+                            <feature name="I_1753500658__F_CEA598BBE151"/>
                             <feature name="I_2050090012__F_254B8FE32A33"/>
                             <feature name="I_2050090012__F_6841F5BFA57E"/>
                             <feature name="I_2050090012__F_47DC939E0587"/>
