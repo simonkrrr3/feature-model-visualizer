@@ -1,5 +1,5 @@
 function collapseAction(node) {
-    node.data.isCollapsed = !node.data.isCollapsed;
+    collapse(node);
     closeContextMenu();
     updateSvg();
 }
@@ -12,7 +12,7 @@ function contextMenu(e, node) {
     contextMenu.style.left = e.pageX + 'px';
 
     // Collapse
-    if (node.children || node._children) {
+    if (node.children || node.collapsedChildren) {
         // Active link
         document.querySelector('#context-menu-collapse').classList.remove('deactivated');
         document.querySelector('#context-menu-collapse').addEventListener('click', () => collapseAction(node));

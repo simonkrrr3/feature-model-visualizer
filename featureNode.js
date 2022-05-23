@@ -5,12 +5,8 @@ class FeatureNode {
         this.groupType = groupType;
         this.isRoot = isRoot;
         this.isMandatory = mandatory;
-        this.isPseudoElement = false;
-        this.areLeftChildrenHidden = false;
-        this.areRightChildrenHidden = false;
         this.isAbstract = abstract;
         this.isLeaf = children.length === 0;
-        this.isCollapsed = this.childrenCount() > 2;
     }
 
     childrenCount() {
@@ -31,10 +27,6 @@ class FeatureNode {
             });
             return totalSubnodesCount;
         }
-    }
-
-    getNonCollapsedChildren() {
-        return this.isCollapsed ? [] : this.children;
     }
 
     isAnd() {

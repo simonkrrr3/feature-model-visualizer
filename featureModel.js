@@ -30,25 +30,25 @@ const svgContent = svg
 
 updateSvg();
 
+// Remove all children from their parents if the parent is collapsed.
+// Otherwise reset the children attribute to temporary saved collapsedChildren.
+function collapse(node, collapseState = null) {
+    collapseState = collapseState === null ? node.collapsedChildren : collapseState;
+
+    if (!node.data.isLeaf) {
+        if (node.collapsedChildren && collapseState) {
+            node.children = node.collapsedChildren;
+            node.collapsedChildren = null;
+        } else if (node.children && !collapseState){
+            node.collapsedChildren = node.children;
+            node.children = null;
+        }
+    }     
+}
+
 function updateSvg() {
     const start = performance.now();
     
-    // Remove all children from their parents if the parent is collapsed.
-    // Otherwise reset the children attribute to temporary saved _children.
-    allNodes.forEach((d) => {
-        if (!d.data.isLeaf) {
-            const children = d.children ? d.children : d._children;
-            if (d.data.isCollapsed) {
-                d._children = children;
-                d.children = null;
-            } else {
-                d.children = children;
-                d._children = null;
-            }
-        }     
-    });
-
-
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
     const treeData = flexLayout(rootNode);
     
@@ -177,7 +177,7 @@ function updateSvg() {
 // Collapses all children of the specifed node with shortcut CTRL + left-click.
 function collapseShortcut(event, node) {
     if (event.getModifierState('Control')) {
-        node.data.isCollapsed = !node.data.isCollapsed;
+        collapse(node);
         updateSvg();
     }
 }

@@ -22,8 +22,8 @@ function searchTree(node, search, path){
     if (node.data.name.includes(search)) { //if search is found return, add the object to the path and return it
         path.push(node);
         return path;
-    } else if (node.children || node._children) { //if children are collapsed d3 object will have them instantiated as _children
-        let children = (node.children) ? node.children : node._children;
+    } else if (node.children || node.collapsedChildren) { //if children are collapsed d3 object will have them instantiated as collapsedChildren
+        let children = (node.children) ? node.children : node.collapsedChildren;
         for(let i = 0; i < children.length; i++){
             path.push(node); // we assume this path is the right one
             let found = searchTree(children[i], search, path);
