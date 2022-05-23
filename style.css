@@ -102,6 +102,11 @@
   stroke-width: 1.5px;
 }
 
+.pseudo-node {
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 .pseudo-node > circle {
   fill: white;
   stroke: #888;

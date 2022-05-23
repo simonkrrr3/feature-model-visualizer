@@ -66,7 +66,7 @@ function toggleLeftSiblings(node) {
         parent.children = parent.children.slice(parent.leftHiddenChildren.length);
 
         // Add pseudo node.
-        const newNodeLeft = d3.hierarchy(new PseudoNode());
+        const newNodeLeft = d3.hierarchy(new PseudoNode('left'));
         newNodeLeft.parent = parent;
         parent.children = [newNodeLeft, ...parent.children];
     }
@@ -76,6 +76,7 @@ function toggleLeftSiblings(node) {
     
     closeContextMenu();
     updateSvg();
+    focusNode(node);
 }
 
 function toggleRightSiblings(node) {
@@ -95,7 +96,7 @@ function toggleRightSiblings(node) {
         parent.children = parent.children.slice(0, -parent.rightHiddenChildren.length);
 
         // Add pseudo node.
-        const newNodeRight = d3.hierarchy(new PseudoNode());
+        const newNodeRight = d3.hierarchy(new PseudoNode('right'));
         newNodeRight.parent = parent;
         parent.children = [...parent.children, newNodeRight];
     }
@@ -105,4 +106,5 @@ function toggleRightSiblings(node) {
 
     closeContextMenu();
     updateSvg();
+    focusNode(node);
 }

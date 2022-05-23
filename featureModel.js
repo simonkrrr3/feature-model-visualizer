@@ -36,11 +36,11 @@ function updateSvg() {
     const start = performance.now();
     
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
-    const treeData = flexLayout(rootNode);
+    const visibleNodes = flexLayout(rootNode).descendants();
 
     const featureNode = svgContent
         .selectAll('g.node')
-        .data(treeData.descendants().filter(node => node.data instanceof FeatureNode), node => node.id || (node.id = ++nodeIdCounter));
+        .data(visibleNodes.filter(node => node.data instanceof FeatureNode), node => node.id || (node.id = ++nodeIdCounter));
 
     // Enter new nodes
     const featureNodeEnter = featureNode
@@ -96,11 +96,12 @@ function updateSvg() {
 
     const pseudoNode = svgContent
         .selectAll('g.pseudo-node')
-        .data(treeData.descendants().filter(node => node.data instanceof PseudoNode), node => node.id || (node.id = ++nodeIdCounter));
+        .data(visibleNodes.filter(node => node.data instanceof PseudoNode), node => node.id || (node.id = ++nodeIdCounter));
     const pseudoNodeEnter = pseudoNode
         .enter()
         .append('g')
-        .classed('pseudo-node', true);
+        .classed('pseudo-node', true)
+        .on('click', (event, node) => node.data.side === 'left' ? toggleLeftSiblings(node) : toggleRightSiblings(node));
     pseudoNodeEnter
         .append('circle')
         .attr('r', PSEUDO_NODE_SIZE);
@@ -145,12 +146,11 @@ function updateSvg() {
 
     // Remove old/invisible nodes.
     featureNode.exit().remove();
-    console.log(featureNode.exit());
     pseudoNode.exit().remove();
 
 
     // Links
-    const links = treeData.descendants().slice(1).filter(node => node.data instanceof FeatureNode);
+    const links = visibleNodes.slice(1).filter(node => node.data instanceof FeatureNode);
     const link = svgContent
         .selectAll('path.link')
         .data(links, node => node.id);

@@ -42,4 +42,8 @@ class FeatureNode {
     }
 }
 
-class PseudoNode { }
+class PseudoNode { 
+    constructor(side) {
+        this.side = side;
+    }
+}

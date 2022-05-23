@@ -49,6 +49,5 @@ function createGroupSegment(node, radius) {
 
 function createLink(src, dest) {
     const src_y = src.y + RECT_HEIGHT;
-    return `M ${src.x} ${src_y}
-            L ${dest.x} ${dest.y}`;
+    return `M ${src.x} ${src_y} L ${dest.x} ${dest.y}`;
 }
