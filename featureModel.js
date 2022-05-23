@@ -38,7 +38,20 @@ function updateSvg() {
     allNodes.forEach((d) => {
 
         if (!d.data.isRoot) {
-            d.parent.children = d.parent.children?.filter(child => child.isPseudoElement || !child.data.isHidden);
+            d.parent.hiddenLeft = d.parent.children?.filter(child => child.data.isHiddenLeft);
+            d.parent.hiddenRight = d.parent.children?.filter(child => child.data.isHiddenRight);
+            d.parent.children = d.parent.children?.filter(child => child.data.isPseudoElement || (!child.data.isHiddenLeft && !child.data.isHiddenRight));
+
+            if (d.parent.hiddenLeft?.length && !d.parent.areLeftChildrenHidden) {
+                console.log('A');
+                d.parent.children = [...d.parent.hiddenLeft, ...d.parent.children];
+            } else if (d.parent.hiddenRight?.length && !d.parent.areRightChildrenHidden) {
+                console.log('B');
+                d.parent.children = [...d.parent.children, ...d.parent.hiddenRight];
+            }
+
+            console.log(d.parent.children, d.parent.hiddenLeft, d.parent.hiddenRight);
+
         }
 
         if (!d.data.isLeaf) {
@@ -47,21 +60,18 @@ function updateSvg() {
                 d._children = children;
                 d.children = null;
             } else {
-                d.children = children.filter(child => !child.isPseudoElement);
+                d.children = children.filter(child => !child.data.isPseudoElement);
                 d._children = null;
-
             }
 
             const pseudoElement = d3.hierarchy({ isPseudoElement: true, name: '...' });
 
             if (d.data.areLeftChildrenHidden && !d.children[0].data.isPseudoElement) {
-                d.children.splice(0, 0, pseudoElement);
-                console.warn(d.children);
+                d.children = [pseudoElement, ...d.children];
             }
 
             if (d.data.areRightChildrenHidden && !d.children[d.children.length - 1].data.isPseudoElement) {
-                d.children.push(pseudoElement);
-                console.warn(d.children);
+                d.children = [...d.children, pseudoElement];
             } 
         }     
     });

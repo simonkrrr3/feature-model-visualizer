@@ -24,21 +24,19 @@ function contextMenu(e, node) {
     // Hide left siblings
     if (node.parent?.children?.length > 1 && node.parent.children[0].data.name !== node.data.name) {
         // Active link
-        document.querySelector('#context-menu-hide-left-siblings').classList.remove('deactivated');
-        document.querySelector('#context-menu-hide-left-siblings').addEventListener('click', () => hideLeftSiblings(node));
+        document.querySelector('#context-menu-toggle-left-siblings').addEventListener('click', () => toggleLeftSiblings(node));
     } else {
         // Inactive link
-        document.querySelector('#context-menu-hide-left-siblings').classList.add('deactivated');
+        document.querySelector('#context-menu-toggle-left-siblings').classList.add('deactivated');
     }
 
     // Hide right siblings
-    if (node.parent?.children.length > 1 && node.parent.children[node.parent.children.length - 1].data.name !== node.data.name) {
+    if (node.parent?.children?.length > 1 && node.parent.children[node.parent.children.length - 1].data.name !== node.data.name) {
         // Active link
-        document.querySelector('#context-menu-hide-right-siblings').classList.remove('deactivated');
-        document.querySelector('#context-menu-hide-right-siblings').addEventListener('click', () => hideRightSiblings(node));
+        document.querySelector('#context-menu-toggle-right-siblings').addEventListener('click', () => toggleRightSiblings(node));
     } else {
         // Inactive link
-        document.querySelector('#context-menu-hide-right-siblings').classList.add('deactivated');
+        document.querySelector('#context-menu-toggle-right-siblings').classList.add('deactivated');
     }
 }
 
@@ -51,32 +49,36 @@ function closeContextMenu() {
     contextMenu.parentNode.replaceChild(contextMenuClone, contextMenu);
 }
 
-function hideLeftSiblings(node) {
+function toggleLeftSiblings(node) {
     for (child of node.parent.children) {
-        if (node.data.name !== child.data.name) {
-            child.data.isHidden = true;
+        if (node.data.name !== child.data.name && node.parent.data.areLeftChildrenHidden) {
+            child.data.isHiddenLeft = true;
+        } else if (node.data.name !== child.data.name && !node.parent.data.areLeftChildrenHidden) {
+            child.data.isHiddenLeft = false;
         } else {
             break;
         }
     }
 
-    node.parent.data.areLeftChildrenHidden = true;
+    node.parent.data.areLeftChildrenHidden = !node.parent.data.areLeftChildrenHidden;
 
     updateSvg();
 }
 
-function hideRightSiblings(node) {
-    let toReverse = [...node.parent.children].reverse();
+function toggleRightSiblings(node) {
+    node.parent.data.areRightChildrenHidden = !node.parent.data.areRightChildrenHidden;
 
-    for (child of toReverse) {
-        if (node.data.name !== child.data.name) {
-            child.data.isHidden = true;
+    let reversed = [...node.parent.children].reverse();
+
+    for (child of reversed) {
+        if (node.data.name !== child.data.name && node.parent.data.areRightChildrenHidden) {
+            child.data.isHiddenRight = true;
+        } else if (node.data.name !== child.data.name && !node.parent.data.areRightChildrenHidden) {
+            child.data.isHiddenRight = false;
         } else {
             break;
         }
     }
-
-    node.parent.data.areRightChildrenHidden = true;
 
     updateSvg();
 }

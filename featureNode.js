@@ -1,11 +1,12 @@
 class FeatureNode {
-    constructor(name, groupType, isRoot, mandatory, abstract, children, isHidden = false) {
+    constructor(name, groupType, isRoot, mandatory, abstract, children) {
         this.name = name;
         this.children = children;
         this.groupType = groupType;
         this.isRoot = isRoot;
         this.isMandatory = mandatory;
-        this.isHidden = isHidden;
+        this.isHiddenLeft = false;
+        this.isHiddenRight = false;
         this.isPseudoElement = false;
         this.areLeftChildrenHidden = false;
         this.areRightChildrenHidden = false;
