@@ -41,3 +41,5 @@ class FeatureNode {
         return this.groupType === 'alt';
     }
 }
+
+class PseudoNode { }

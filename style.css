@@ -101,3 +101,9 @@
   stroke: #888;
   stroke-width: 1.5px;
 }
+
+.pseudo-node > circle {
+  fill: white;
+  stroke: #888;
+  stroke-width: 1.5px;
+}
