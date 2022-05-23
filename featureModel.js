@@ -1,7 +1,7 @@
 
 
 // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
-const flexLayout = d3.flextree()
+let flexLayout = d3.flextree()
     .nodeSize((node) => [calcRectWidth(node) + SPACE_BETWEEN_NODES_HORIZONTALLY, RECT_HEIGHT + SPACE_BETWEEN_NODES_VERTICALLY])
     .spacing((nodeA, nodeB) => nodeA.path(nodeB).length);
 
@@ -125,11 +125,15 @@ function updateSvg() {
     const nodeUpdate = nodeEnter.merge(node);
     nodeUpdate
         .attr('transform', (node) => 'translate(' + node.x + ', ' + node.y + ')');
-    nodeUpdate
-        .select('.rect-and-text')
+    const rectAndTextUpdate = nodeUpdate
+        .select('.rect-and-text');
+    rectAndTextUpdate
         .select('rect')
         .classed('is-searched-feature', (node) => node.data.isSearched)
         .attr('fill', (node) => node.data.color ?? (node.data.isAbstract ? '#ebebff' : '#ccccff'));
+    rectAndTextUpdate
+        .select('text')
+        .attr('font-style', (node) => node.data.isAbstract ? 'italic' : 'normal');
     nodeUpdate
         .select('.and-group-circle')
         .classed('mandatory-and-group-circle', (node) => node.parent && node.parent.data.isAnd() && node.data.isMandatory)
