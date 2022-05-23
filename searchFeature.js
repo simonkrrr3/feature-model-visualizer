@@ -1,24 +1,25 @@
-document.querySelector('#feature-search').addEventListener('keydown', (e) => {
-    if (e.keyCode === 13) { 
+document.querySelector('#feature-search').addEventListener('keyup', (e) => {
         allNodes.forEach((d) => {
             d.data.isSearched = false;
             d.data.isFocused = false;
         });
         
-        const paths = searchTree(rootNode, e.target.value, []);        
-        paths.forEach((d) => d.data.isSearched = true);
-        allNodes.forEach((d) => {
-            d.data.isCollapsed = !d.data.isSearched;
-        });
+        const paths = searchTree(rootNode, e.target.value, []);
 
-        paths[paths.length - 1].data.isFocused = true;
-        updateSvg();
-    }
-})
+        if (paths) {        
+            paths.forEach((d) => d.data.isSearched = true);
+            allNodes.forEach((d) => {
+                d.data.isCollapsed = !d.data.isSearched;
+            });
+
+            paths[paths.length - 1].data.isFocused = true;
+            updateSvg();
+        } //TODO: Show error icon
+    })
 
 function searchTree(node, search, path){
-    //TODO: Add levenshtein distance
-    if (node.data.name === search) { //if search is found return, add the object to the path and return it
+    //TODO: Add levenshtein distance?
+    if (node.data.name.includes(search)) { //if search is found return, add the object to the path and return it
         path.push(node);
         return path;
     } else if (node.children || node._children) { //if children are collapsed d3 object will have them instantiated as _children

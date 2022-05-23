@@ -1,4 +1,4 @@
-const currentModel = littleModel; // Choose between littleModel and hugeModel.
+const currentModel = hugeModel; // Choose between littleModel and hugeModel.
 
 function xmlToJson() {
     const start = performance.now();
