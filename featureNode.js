@@ -1,10 +1,14 @@
 class FeatureNode {
-    constructor(name, groupType, isRoot, mandatory, abstract, children) {
+    constructor(name, groupType, isRoot, mandatory, abstract, children, isHidden = false) {
         this.name = name;
         this.children = children;
         this.groupType = groupType;
         this.isRoot = isRoot;
         this.isMandatory = mandatory;
+        this.isHidden = isHidden;
+        this.isPseudoElement = false;
+        this.areLeftChildrenHidden = false;
+        this.areRightChildrenHidden = false;
         this.isAbstract = abstract;
         this.isLeaf = children.length === 0;
         this.isCollapsed = this.childrenCount() > 2;
@@ -48,5 +52,17 @@ class FeatureNode {
     
     isAlt() {
         return this.groupType === 'alt';
+    }
+
+    addPseudoElementsIfNecessary() {
+        if (!this.isCollapsed) {
+            if (this.areLeftChildrenHidden) {
+                this.children.splice(0, 0, {});
+            }
+
+            if (this.areRightChildrenHidden) {
+                this.children.push({});
+            }
+        }
     }
 }

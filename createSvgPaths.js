@@ -33,8 +33,9 @@ function toPath({x, y}) {
 
 function createGroupSegment(node, radius) {
     if (node.children && node.children.length > 1) {
-        const firstChild = node.children[0];
-        const lastChild = node.children[node.children.length - 1];
+
+        const firstChild = node.children[0].isPseudoElement ? node.children[1] : node.children[0];
+        const lastChild = node.children[node.children.length - 1].isPseudoElement ? node.children[node.children.length - 2] : node.children[node.children.length - 1];
 
         const bottom_rect = {x: node.x, y: node.y + RECT_HEIGHT };
         const startAngle = cartesianToAngle(bottom_rect, firstChild);

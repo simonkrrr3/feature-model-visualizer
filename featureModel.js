@@ -3,11 +3,10 @@
 // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
 let flexLayout = d3.flextree()
     .nodeSize((node) => [calcRectWidth(node) + SPACE_BETWEEN_NODES_HORIZONTALLY, RECT_HEIGHT + SPACE_BETWEEN_NODES_VERTICALLY])
-    .spacing((nodeA, nodeB) => nodeA.path(nodeB).length);
+    .spacing((nodeA, nodeB) => nodeA.isPseudoElement ? 0 : nodeA.path(nodeB).length);
 
 // Create root-feature-node with d3 and the data of the feature-model.
 const rootNode = d3.hierarchy(featureModelRawData, (d) => d.children);
-
 const allNodes = rootNode.descendants();
 
 
@@ -33,21 +32,42 @@ updateSvg();
 
 function updateSvg() {
     const start = performance.now();
-
+    
     // Remove all children from their parents if the parent is collapsed.
     // Otherwise reset the children attribute to temporary saved _children.
     allNodes.forEach((d) => {
+
+        if (!d.data.isRoot) {
+            d.parent.children = d.parent.children?.filter(child => child.isPseudoElement || !child.data.isHidden);
+        }
+
         if (!d.data.isLeaf) {
             const children = d.children ? d.children : d._children;
             if (d.data.isCollapsed) {
                 d._children = children;
                 d.children = null;
             } else {
-                d.children = children;
+                d.children = children.filter(child => !child.isPseudoElement);
                 d._children = null;
+
             }
-        }
+
+            const pseudoElement = d3.hierarchy({ isPseudoElement: true, name: '...' });
+
+            if (d.data.areLeftChildrenHidden && !d.children[0].data.isPseudoElement) {
+                d.children.splice(0, 0, pseudoElement);
+                console.warn(d.children);
+            }
+
+            if (d.data.areRightChildrenHidden && !d.children[d.children.length - 1].data.isPseudoElement) {
+                d.children.push(pseudoElement);
+                console.warn(d.children);
+            } 
+        }     
     });
+
+
+
 
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
     const treeData = flexLayout(rootNode);
@@ -74,39 +94,38 @@ function updateSvg() {
         .on('contextmenu', (e, d) => contextMenu(e, d)) // Open contextmenu with right-click on node.
         .on('click', (e, d) => collapseShortcut(e, d)); // Collapse node with Ctrl + left-click on node.
 
-    const rectAndText = nodeEnter
+    const rectAndTextEnter = nodeEnter
         .append('g')
         .classed('rect-and-text', true);
-    rectAndText
+    rectAndTextEnter
         .append('rect')
         .attr('x', (d) => -calcRectWidth(d) / 2)
         .attr('height', RECT_HEIGHT)
         .attr('width', (d) => calcRectWidth(d))
         .attr('fill', '#ccccff');
-
-    rectAndText
+    rectAndTextEnter
         .append('text')
         .attr('dy', RECT_HEIGHT / 2 + 5.5)
         .attr('font-size', FEATURE_FONT_SIZE)
         .text((d) => d.data.name);
 
     nodeEnter
-        .filter((node) => !node.data.isRoot && node.parent.data.isAnd())
+        .filter((node) => !node.data.isRoot && !node.data.isPseudoElement && node.parent.data.isAnd())
         .append('circle')
         .classed('and-group-circle', true)
         .attr('r', MANDATORY_CIRCLE_RADIUS);
     nodeEnter
-        .filter((node) => node.data.isAlt())
+        .filter((node) => !node.data.isPseudoElement && node.data.isAlt())
         .append('path')
         .classed('alt-group', true);
     nodeEnter
-        .filter((node) => node.data.isOr())
+        .filter((node) => !node.data.isPseudoElement && node.data.isOr())
         .append('path')
         .classed('or-group', true);
 
     // Enter circle with number of direct and total children.
     const childrenCountEnter = nodeEnter
-        .filter((node) => !node.data.isLeaf)
+        .filter((node) => !node.data.isPseudoElement && !node.data.isLeaf)
         .append('g')
         .classed('children-count', true)
         .attr('transform', ((node) => 'translate(' + calcRectWidth(node) / 2 + ', ' + RECT_HEIGHT + ')'));
@@ -153,7 +172,7 @@ function updateSvg() {
 
 
     // Links
-    const links = treeData.descendants().slice(1);
+    const links = treeData.descendants().slice(1).filter(node => !node.data.isPseudoElement);
     const link = svgContent
         .selectAll('path.link')
         .data(links, (node) => node.id);

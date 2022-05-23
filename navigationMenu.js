@@ -21,10 +21,10 @@ document.querySelector('#navigation-menu-count').addEventListener('click', () =>
             }
         }
         
-        const colors = d3.scaleLinear().domain([1, max]).range(['white', 'blue']);
+        const colors = d3.scaleLinear().domain([1, max]).range(['white', 'green']);
 
         for (const node of allNodes) {
-            if (count[node.data.name]) {
+            if (count[node.data.name] && !node.data.isAbstract) {
                 node.data.color = colors(count[node.data.name]);
             }
         }
