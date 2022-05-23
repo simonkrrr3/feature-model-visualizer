@@ -1,5 +1,5 @@
 function collapseAction(node) {
-    node.data.collapse();
+    node.data.isCollapsed = !node.data.isCollapsed;
     closeContextMenu();
     updateSvg();
 }
@@ -69,6 +69,7 @@ function toggleLeftSiblings(node) {
         const newFeatureNodeLeft = new FeatureNode('...', 'pseudo', false, false, false, []);
         const newNodeLeft = d3.hierarchy(newFeatureNodeLeft);
         newNodeLeft.parent = parent;
+        newNodeLeft.isPseudoElement = true;
         parent.children = [newNodeLeft, ...parent.children];
     }
     
@@ -99,6 +100,7 @@ function toggleRightSiblings(node) {
         const newFeatureNodeRight = new FeatureNode('...', 'pseudo', false, false, false, []);
         const newNodeRight = d3.hierarchy(newFeatureNodeRight);
         newNodeRight.parent = parent;
+        newNodeRight.isPseudoElement = true;
         parent.children = [...parent.children, newNodeRight];
     }
     

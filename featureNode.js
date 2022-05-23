@@ -33,10 +33,6 @@ class FeatureNode {
         }
     }
 
-    collapse() {
-        this.isCollapsed = !this.isCollapsed;
-    }
-
     getNonCollapsedChildren() {
         return this.isCollapsed ? [] : this.children;
     }

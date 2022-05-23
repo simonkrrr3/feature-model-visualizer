@@ -177,7 +177,7 @@ function updateSvg() {
 // Collapses all children of the specifed node with shortcut CTRL + left-click.
 function collapseShortcut(event, node) {
     if (event.getModifierState('Control')) {
-        node.data.collapse();
+        node.data.isCollapsed = !node.data.isCollapsed;
         updateSvg();
     }
 }
