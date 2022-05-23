@@ -1,7 +1,6 @@
 document.querySelector('#feature-search').addEventListener('keyup', (e) => {
         allNodes.forEach((d) => {
             d.data.isSearched = false;
-            d.data.isFocused = false;
         });
         
         const paths = searchTree(rootNode, e.target.value, []);
@@ -12,10 +11,10 @@ document.querySelector('#feature-search').addEventListener('keyup', (e) => {
                 d.data.isCollapsed = !d.data.isSearched;
             });
 
-            paths[paths.length - 1].data.isFocused = true;
             updateSvg();
+            focusNode(paths[paths.length - 1]);
         } //TODO: Show error icon
-    })
+    });
 
 function searchTree(node, search, path){
     //TODO: Add levenshtein distance?

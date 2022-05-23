@@ -30,22 +30,6 @@ const svgContent = svg
 
 updateSvg();
 
-// Remove all children from their parents if the parent is collapsed.
-// Otherwise reset the children attribute to temporary saved collapsedChildren.
-function collapse(node, collapseState = null) {
-    collapseState = collapseState === null ? node.collapsedChildren : collapseState;
-
-    if (!node.data.isLeaf) {
-        if (node.collapsedChildren && collapseState) {
-            node.children = node.collapsedChildren;
-            node.collapsedChildren = null;
-        } else if (node.children && !collapseState){
-            node.collapsedChildren = node.children;
-            node.children = null;
-        }
-    }     
-}
-
 function updateSvg() {
     const start = performance.now();
     
@@ -58,13 +42,6 @@ function updateSvg() {
     const node = svgContent
         .selectAll('g.node')
         .data(visibleNodes, (d) => d.id || (d.id = ++nodeIdCounter));
-
-    visibleNodes.forEach(node => {
-        if (node.data.isFocused) {
-            d3.select('svg').call(zoom.translateTo, node.x, node.y);
-            node.data.isFocused = false;
-        }
-    });
 
     // Enter new nodes
     const nodeEnter = node
@@ -185,4 +162,24 @@ function collapseShortcut(event, node) {
 // Calculates rect-witdh dependent on font-size dynamically.
 function calcRectWidth(node) {
     return node.data.name.length * (FEATURE_FONT_SIZE * MONOSPACE_HEIGHT_WIDTH_FACTOR) + RECT_MARGIN.left + RECT_MARGIN.right;
+}
+
+function focusNode(node) {
+    d3.select('svg').call(zoom.translateTo, node.x, node.y);
+}
+
+// Remove all children from their parents if the parent is collapsed.
+// Otherwise reset the children attribute to temporary saved collapsedChildren.
+function collapse(node, collapseState = null) {
+    collapseState = collapseState === null ? node.collapsedChildren : collapseState;
+
+    if (!node.data.isLeaf) {
+        if (node.collapsedChildren && collapseState) {
+            node.children = node.collapsedChildren;
+            node.collapsedChildren = null;
+        } else if (node.children && !collapseState){
+            node.collapsedChildren = node.children;
+            node.children = null;
+        }
+    }     
 }
