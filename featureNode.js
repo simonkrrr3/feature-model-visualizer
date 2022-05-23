@@ -5,8 +5,6 @@ class FeatureNode {
         this.groupType = groupType;
         this.isRoot = isRoot;
         this.isMandatory = mandatory;
-        this.isHiddenLeft = false;
-        this.isHiddenRight = false;
         this.isPseudoElement = false;
         this.areLeftChildrenHidden = false;
         this.areRightChildrenHidden = false;
@@ -53,17 +51,5 @@ class FeatureNode {
     
     isAlt() {
         return this.groupType === 'alt';
-    }
-
-    addPseudoElementsIfNecessary() {
-        if (!this.isCollapsed) {
-            if (this.areLeftChildrenHidden) {
-                this.children.splice(0, 0, {});
-            }
-
-            if (this.areRightChildrenHidden) {
-                this.children.push({});
-            }
-        }
     }
 }

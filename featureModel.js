@@ -36,47 +36,17 @@ function updateSvg() {
     // Remove all children from their parents if the parent is collapsed.
     // Otherwise reset the children attribute to temporary saved _children.
     allNodes.forEach((d) => {
-
-        if (!d.data.isRoot) {
-            d.parent.hiddenLeft = d.parent.children?.filter(child => child.data.isHiddenLeft);
-            d.parent.hiddenRight = d.parent.children?.filter(child => child.data.isHiddenRight);
-            d.parent.children = d.parent.children?.filter(child => child.data.isPseudoElement || (!child.data.isHiddenLeft && !child.data.isHiddenRight));
-
-            if (d.parent.hiddenLeft?.length && !d.parent.areLeftChildrenHidden) {
-                console.log('A');
-                d.parent.children = [...d.parent.hiddenLeft, ...d.parent.children];
-            } else if (d.parent.hiddenRight?.length && !d.parent.areRightChildrenHidden) {
-                console.log('B');
-                d.parent.children = [...d.parent.children, ...d.parent.hiddenRight];
-            }
-
-            console.log(d.parent.children, d.parent.hiddenLeft, d.parent.hiddenRight);
-
-        }
-
         if (!d.data.isLeaf) {
             const children = d.children ? d.children : d._children;
             if (d.data.isCollapsed) {
                 d._children = children;
                 d.children = null;
             } else {
-                d.children = children.filter(child => !child.data.isPseudoElement);
+                d.children = children;
                 d._children = null;
             }
-
-            const pseudoElement = d3.hierarchy({ isPseudoElement: true, name: '...' });
-
-            if (d.data.areLeftChildrenHidden && !d.children[0].data.isPseudoElement) {
-                d.children = [pseudoElement, ...d.children];
-            }
-
-            if (d.data.areRightChildrenHidden && !d.children[d.children.length - 1].data.isPseudoElement) {
-                d.children = [...d.children, pseudoElement];
-            } 
         }     
     });
-
-
 
 
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.

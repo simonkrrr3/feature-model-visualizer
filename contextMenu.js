@@ -50,35 +50,61 @@ function closeContextMenu() {
 }
 
 function toggleLeftSiblings(node) {
-    for (child of node.parent.children) {
-        if (node.data.name !== child.data.name && node.parent.data.areLeftChildrenHidden) {
-            child.data.isHiddenLeft = true;
-        } else if (node.data.name !== child.data.name && !node.parent.data.areLeftChildrenHidden) {
-            child.data.isHiddenLeft = false;
-        } else {
-            break;
+    const parent = node.parent;
+
+    if (parent.areLeftChildrenHidden) {
+        // Unhide hidden children.
+        parent.children = [...parent.leftHiddenChildren, ...parent.children.slice(1)];
+        parent.leftHiddenChildren = null;
+    } else {
+        // Hide all nodes left of specified node.
+        parent.leftHiddenChildren = [];
+        for (child of parent.children) {
+            if (child.id === node.id) break;
+            parent.leftHiddenChildren.push(child);
         }
+        parent.children = parent.children.slice(parent.leftHiddenChildren.length);
+
+        // Add pseudo node.
+        const newFeatureNodeLeft = new FeatureNode('...', 'pseudo', false, false, false, []);
+        const newNodeLeft = d3.hierarchy(newFeatureNodeLeft);
+        newNodeLeft.parent = parent;
+        parent.children = [newNodeLeft, ...parent.children];
     }
-
-    node.parent.data.areLeftChildrenHidden = !node.parent.data.areLeftChildrenHidden;
-
+    
+    // Toggle hidden.
+    parent.areLeftChildrenHidden = !parent.areLeftChildrenHidden;
+    
+    closeContextMenu();
     updateSvg();
 }
 
 function toggleRightSiblings(node) {
-    node.parent.data.areRightChildrenHidden = !node.parent.data.areRightChildrenHidden;
-
-    let reversed = [...node.parent.children].reverse();
-
-    for (child of reversed) {
-        if (node.data.name !== child.data.name && node.parent.data.areRightChildrenHidden) {
-            child.data.isHiddenRight = true;
-        } else if (node.data.name !== child.data.name && !node.parent.data.areRightChildrenHidden) {
-            child.data.isHiddenRight = false;
-        } else {
-            break;
+    const parent = node.parent;
+    
+    if (parent.areRightChildrenHidden) {
+        // Unhide hidden children.
+        parent.children = [...parent.children.slice(0, -1), ...parent.rightHiddenChildren];
+        parent.rightHiddenChildren = null;
+    } else {
+        // Hide all nodes right of specified node.
+        parent.rightHiddenChildren = [];
+        for (child of [...parent.children].reverse()) {
+            if (child.id === node.id) break;
+            parent.rightHiddenChildren.push(child);
         }
-    }
+        parent.children = parent.children.slice(0, -parent.rightHiddenChildren.length);
 
+        // Add pseudo node.
+        const newFeatureNodeRight = new FeatureNode('...', 'pseudo', false, false, false, []);
+        const newNodeRight = d3.hierarchy(newFeatureNodeRight);
+        newNodeRight.parent = parent;
+        parent.children = [...parent.children, newNodeRight];
+    }
+    
+    // Toggle hidden.
+    parent.areRightChildrenHidden = !parent.areRightChildrenHidden;
+
+    closeContextMenu();
     updateSvg();
 }
