@@ -1,5 +1,3 @@
-
-
 // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
 let flexLayout = d3.flextree()
     .nodeSize(node => [calcRectWidth(node) + SPACE_BETWEEN_NODES_HORIZONTALLY, RECT_HEIGHT + SPACE_BETWEEN_NODES_VERTICALLY])
@@ -26,6 +24,10 @@ const svg = d3
 const svgContent = svg
     .append('g');
 
+
+
+// Collapses all nodes after depth 1.
+rootNode.children.forEach(child => child.eachAfter(node => collapse(node)));
 
 updateSvg();
 
