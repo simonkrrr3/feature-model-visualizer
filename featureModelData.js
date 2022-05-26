@@ -14,7 +14,6 @@ const littleModel = `
             <alt mandatory="true" name="Mood">
                 <feature name="Friendly"/>
                 <feature name="Enemy"/>
-                <feature name="Villager"/>
             </alt>
             <or mandatory="true" name="Type">
                 <feature name="Farmer"/>
@@ -25,7 +24,6 @@ const littleModel = `
             <and abstract="true" name="HarvestSkills">
                 <feature mandatory="true" name="Reaping"/>
                 <feature mandatory="true" name="Hauling"/>
-                <feature name="Villager"/>
                 <feature mandatory="true" name="Threshing"/>
             </and>
         </and>

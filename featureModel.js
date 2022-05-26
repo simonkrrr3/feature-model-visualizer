@@ -50,7 +50,7 @@ function updateSvg() {
         .on('contextmenu', (event, node) => contextMenu(event, node)) // Open contextmenu with right-click on node.
         .on('click', (event, node) => collapseShortcut(event, node)); // Collapse node with Ctrl + left-click on node.
     
-        const rectAndTextEnter = featureNodeEnter
+    const rectAndTextEnter = featureNodeEnter
         .append('g')
         .classed('rect-and-text', true);
     rectAndTextEnter
@@ -136,10 +136,11 @@ function updateSvg() {
     rectAndTextUpdate
         .select('rect')
         .classed('is-searched-feature', node => node.data.isSearched)
-        .attr('fill', node => node.data.color ?? (node.data.isAbstract ? '#ebebff' : '#ccccff'));
+        .attr('fill', node => node.data.color);
     rectAndTextUpdate
         .select('text')
         .attr('font-style', node => node.data.isAbstract ? 'italic' : 'normal');
+
         
     const pseudoNodeUpdate = pseudoNodeEnter.merge(pseudoNode);
     pseudoNodeUpdate

@@ -7,6 +7,8 @@ class FeatureNode {
         this.isMandatory = mandatory;
         this.isAbstract = abstract;
         this.isLeaf = children.length === 0;
+        this.color = this.isAbstract ? '#ebebff' : '#ccccff';
+        this.constraints = [];
     }
 
     childrenCount() {
