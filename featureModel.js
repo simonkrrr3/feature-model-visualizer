@@ -49,6 +49,22 @@ function updateSvg() {
         .classed('node', true)
         .on('contextmenu', (event, node) => contextMenu(event, node)) // Open contextmenu with right-click on node.
         .on('click', (event, node) => collapseShortcut(event, node)); // Collapse node with Ctrl + left-click on node.
+    
+        const rectAndTextEnter = featureNodeEnter
+        .append('g')
+        .classed('rect-and-text', true);
+    rectAndTextEnter
+        .append('rect')
+        .attr('x', node => -calcRectWidth(node) / 2)
+        .attr('height', RECT_HEIGHT)
+        .attr('width', node => calcRectWidth(node))
+        .attr('fill', '#ccccff');
+    rectAndTextEnter
+        .append('text')
+        .attr('dy', RECT_HEIGHT / 2 + 5.5)
+        .attr('font-size', FEATURE_FONT_SIZE)
+        .text(node => node.data.name);
+    
     featureNodeEnter
         .filter(node => !node.data.isRoot && node.parent.data.isAnd())
         .append('circle')
@@ -63,20 +79,6 @@ function updateSvg() {
         .append('path')
         .classed('or-group', true);
 
-    const rectAndTextEnter = featureNodeEnter
-        .append('g')
-        .classed('rect-and-text', true);
-    rectAndTextEnter
-        .append('rect')
-        .attr('x', node => -calcRectWidth(node) / 2)
-        .attr('height', RECT_HEIGHT)
-        .attr('width', node => calcRectWidth(node))
-        .attr('fill', '#ccccff');
-    rectAndTextEnter
-        .append('text')
-        .attr('dy', RECT_HEIGHT / 2 + 5.5)
-        .attr('font-size', FEATURE_FONT_SIZE)
-        .text(node => node.data.name);
 
     // Enter circle with number of direct and total children.
     const childrenCountEnter = featureNodeEnter
@@ -109,7 +111,7 @@ function updateSvg() {
         .append('text')
         .attr('font-size', 30)
         .attr('dy', 2)
-        .attr('dx', -10)
+        .attr('dx', -12)
         .text('...');
 
 
