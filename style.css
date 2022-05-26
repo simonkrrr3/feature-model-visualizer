@@ -112,3 +112,10 @@
   stroke: #888;
   stroke-width: 1.5px;
 }
+
+.feature-model-constraints {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: greenyellow;
+}
