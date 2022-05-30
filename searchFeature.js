@@ -6,6 +6,7 @@ document.querySelector('#feature-search').addEventListener('keyup', (e) => {
         const paths = searchTree(rootNode, e.target.value, []);
 
         if (paths) {        
+            console.log('paths', paths);
             paths.forEach((d) => d.data.isSearched = true);
             allNodes.forEach((d) => {
                 d.data.isCollapsed = !d.data.isSearched;
