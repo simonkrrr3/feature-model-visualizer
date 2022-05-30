@@ -9,6 +9,7 @@ class FeatureNode {
         this.isLeaf = children.length === 0;
         this.color = this.isAbstract ? '#ebebff' : '#ccccff';
         this.constraints = [];
+        this.constraintsHighlighted = [];
     }
 
     childrenCount() {

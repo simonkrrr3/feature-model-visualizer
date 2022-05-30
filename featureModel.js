@@ -8,7 +8,6 @@ const rootNode = d3.hierarchy(featureModelRawData, node => node.children);
 const allNodes = rootNode.descendants();
 
 
-
 const zoom = d3.zoom().scaleExtent([0.1, 8]).on("zoom", (event) => svgContent.attr('transform', event.transform));
 
 // Create svg-container.
@@ -37,6 +36,41 @@ function updateSvg() {
     
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
     const visibleNodes = flexLayout(rootNode).descendants();
+
+
+    const highlightedConstraintNodes = svgContent
+        .selectAll('g.highlighted-constraints-container')
+        .data(visibleNodes.filter(node => node.data.constraintsHighlighted.length), node => node.id || (node.id = ++nodeIdCounter));
+
+    const highlightedConstraintNodesEnter = highlightedConstraintNodes
+        .enter()
+        .append('g')
+        .classed('highlighted-constraints-container', true);
+        
+    const highlightedConstraintNodeRects = highlightedConstraintNodesEnter.merge(highlightedConstraintNodes)
+        .selectAll('rect')
+        .data(node => node.data.constraintsHighlighted.map(c => ({ constraint: c, d3Node: node })), json => json.constraint.toString() + json.d3Node.id);
+        
+    // Enter highlighted constraint rects
+    const highlightedConstraintNodeRectsEnter = highlightedConstraintNodeRects
+        .enter()
+        .append('rect')
+        .attr('stroke', json => json.constraint.color)
+        .attr('stroke-width', STROKE_WIDTH_CONSTANT)
+        .attr('fill', 'transparent');
+        
+    // Update highlighted constraint rects
+    highlightedConstraintNodeRectsEnter.merge(highlightedConstraintNodeRects)
+        .attr('x', json => -calcRectWidth(json.d3Node) / 2)
+        .attr('height', (_, i) => RECT_HEIGHT + (i * 2 * STROKE_WIDTH_CONSTANT))
+        .attr('width', (json, i) => calcRectWidth(json.d3Node) + (i * 2 * STROKE_WIDTH_CONSTANT))
+        .attr('transform', (json, i) => 'translate(' + (json.d3Node.x - (i * STROKE_WIDTH_CONSTANT)) + ', ' + (json.d3Node.y - (i * STROKE_WIDTH_CONSTANT)) + ')');
+
+
+
+    // Remove constraints highlighted nodes
+    highlightedConstraintNodes.exit().remove();
+    highlightedConstraintNodes.selectAll('rect').exit().remove();
 
     const featureNode = svgContent
         .selectAll('g.node')
@@ -114,8 +148,7 @@ function updateSvg() {
         .attr('dx', -12)
         .text('...');
 
-
-
+    
     // Update nodes
     const featureNodeUpdate = featureNodeEnter.merge(featureNode);
     featureNodeUpdate
@@ -171,6 +204,7 @@ function updateSvg() {
     const linkExit = link
         .exit()
         .remove();
+
 
     console.log('Rendertime', performance.now() - start);
 }

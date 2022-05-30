@@ -7,6 +7,11 @@
   z-index: 10;
 }
 
+.feature-model-constraints > div {
+  cursor: pointer;
+  user-select: none;
+}
+
 .context-menu > ul {
   padding: 0;
   margin: 0;

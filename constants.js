@@ -19,3 +19,19 @@ let SPACE_BETWEEN_NODES_VERTICALLY = 75;
 let nodeIdCounter = 0;
 
 const PSEUDO_NODE_SIZE = 20;
+
+const CONSTRAINT_HIGHLIGHT_COLORS = [
+    "aqua",
+    "blueviolet",
+    "chartreuse",
+    "crimson",
+    "darkorange",
+    "forestgreen",
+    "red",
+    "yellow",
+    "inidigo",
+];
+
+let CONSTRAINT_HIGHLIGHT_COLORS_COUNTER = 0;
+
+const STROKE_WIDTH_CONSTANT = 4;

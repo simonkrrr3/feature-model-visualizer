@@ -5,10 +5,7 @@ document.querySelector('.feature-model-constraints').addEventListener('mouseente
         constraintElement.dataset.constraint = i;
 
         constraintElement.addEventListener('click', (e) => {
-            constraints[e.target.dataset.constraint].getAllVars().forEach((varName => {
-                varName.featureNode.color = 'lightgreen';
-            }));
-
+            constraints[e.target.dataset.constraint].toggleHighlighted();
             updateSvg();
         })
     });
