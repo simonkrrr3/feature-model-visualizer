@@ -6,20 +6,22 @@ document.querySelector('#feature-search').addEventListener('keyup', (e) => {
         const paths = searchTree(rootNode, e.target.value, []);
 
         if (paths) {        
-            console.log('paths', paths);
             paths.forEach((d) => d.data.isSearched = true);
             allNodes.forEach((d) => {
-                d.data.isCollapsed = !d.data.isSearched;
+                collapse(d, d.data.isSearched);
             });
 
             updateSvg();
             focusNode(paths[paths.length - 1]);
+        } else {
+            updateSvg();
         } //TODO: Show error icon
+        
     });
 
 function searchTree(node, search, path){
     //TODO: Add levenshtein distance?
-    if (node.data.name.includes(search)) { //if search is found return, add the object to the path and return it
+    if (search.length > 0 && node.data.name.includes(search)) { //if search is found return, add the object to the path and return it
         path.push(node);
         return path;
     } else if (node.children || node.collapsedChildren) { //if children are collapsed d3 object will have them instantiated as collapsedChildren

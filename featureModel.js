@@ -92,7 +92,7 @@ function updateFeatureNodes(visibleNodes) {
         .attr('transform', (node => 'translate(' + calcRectWidth(node) / 2 + ', ' + RECT_HEIGHT + ')'));
     childrenCountEnter
         .append('circle')
-        .attr('r', CHILDREN_COUNT_CIRCLE_RADIUS);
+        .attr('r', (node => (node.data.childrenCount() + '|' + node.data.totalSubnodesCount()).length * CHILDREN_COUNT_LETTERS_TO_RADIUS));
     childrenCountEnter
         .append('text')
         .classed('children-count-text', true)
@@ -157,13 +157,13 @@ function updateFeatureNodes(visibleNodes) {
 
 function updateHighlightedConstraints(visibleNodes) {
     const highlightedConstraintNodes = highlightedConstraintsContainer
-        .selectAll('g.highlighted-constraints-container')
-        .data(visibleNodes.filter(node => node instanceof FeatureNode && node.data.constraintsHighlighted.length), node => node.id || (node.id = ++nodeIdCounter));
+        .selectAll('g.highlighted-constraints')
+        .data(visibleNodes.filter(node => node.data instanceof FeatureNode && node.data.constraintsHighlighted.length), node => node.id || (node.id = ++nodeIdCounter));
 
     const highlightedConstraintNodesEnter = highlightedConstraintNodes
         .enter()
         .append('g')
-        .classed('highlighted-constraints-container', true);
+        .classed('highlighted-constraints', true);
         
     const highlightedConstraintNodeRects = highlightedConstraintNodesEnter.merge(highlightedConstraintNodes)
         .selectAll('rect')
@@ -186,7 +186,7 @@ function updateHighlightedConstraints(visibleNodes) {
 
     // Remove constraints highlighted nodes
     highlightedConstraintNodes.exit().remove();
-    highlightedConstraintNodes.selectAll('rect').exit().remove();
+    highlightedConstraintNodeRects.exit().remove();
 }
 
 function updateLinks(visibleNodes) {
@@ -213,6 +213,10 @@ function updateLinks(visibleNodes) {
 function updateSvg() {
     const start = performance.now();
     
+    allNodes
+        .filter(node => node.data instanceof FeatureNode && node.data.constraintsHighlighted.length)
+        .forEach(node => collapse(node, true));
+
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
     const visibleNodes = flexLayout(rootNode).descendants();
 
@@ -241,7 +245,6 @@ function calcRectWidth(node) {
 }
 
 function focusNode(node) {
-    console.log('node', node);
     d3.select('svg').call(zoom.translateTo, node.x, node.y);
 }
 
@@ -259,4 +262,9 @@ function collapse(node, collapseState = null) {
             node.children = null;
         }
     }     
+
+    // If parents of uncollapsed are collapsed (should never happen manually), then also uncollapse them
+    if (node.parent && node.parent.collapsedChildren) {
+        collapse(node.parent, true) 
+    }
 }
