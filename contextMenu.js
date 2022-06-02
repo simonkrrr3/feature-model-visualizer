@@ -1,111 +1,166 @@
 function collapseAction(node) {
-    node.data.toggleCollapse();
-    updateCollapsing();
-    closeContextMenu();
-    updateSvg();
+  node.data.toggleCollapse();
+  updateCollapsing();
+  closeContextMenu();
+  updateSvg();
 }
 
 function contextMenu(e, node) {
-    e.preventDefault();
-    const contextMenu = document.querySelector('.context-menu');
-    contextMenu.classList.toggle('context-menu-active');
-    contextMenu.style.top = e.pageY + 'px';
-    contextMenu.style.left = e.pageX + 'px';
+  e.preventDefault();
+  const contextMenu = document.querySelector(".context-menu");
 
-    // Collapse
-    if (node.children || node.collapsedChildren) {
-        // Active link
-        document.querySelector('#context-menu-collapse').classList.remove('deactivated');
-        document.querySelector('#context-menu-collapse').addEventListener('click', () => collapseAction(node));
-    } else {
-        // Inactive link
-        document.querySelector('#context-menu-collapse').classList.add('deactivated');
-    }
+  // First remove all deactivated classes
+  document
+    .querySelectorAll(".context-menu > ul > .deactivated")
+    .forEach((e) => e.classList.remove("deactivated"));
 
-    // Hide left siblings
-    if (node.parent?.children?.length > 1 && node.parent.children[0].data.name !== node.data.name) {
-        // Active link
-        document.querySelector('#context-menu-toggle-left-siblings').addEventListener('click', () => toggleLeftSiblings(node));
-    } else {
-        // Inactive link
-        document.querySelector('#context-menu-toggle-left-siblings').classList.add('deactivated');
-    }
+  contextMenu.classList.toggle("context-menu-active");
+  contextMenu.style.top = e.pageY + "px";
+  contextMenu.style.left = e.pageX + "px";
 
-    // Hide right siblings
-    if (node.parent?.children?.length > 1 && node.parent.children[node.parent.children.length - 1].data.name !== node.data.name) {
-        // Active link
-        document.querySelector('#context-menu-toggle-right-siblings').addEventListener('click', () => toggleRightSiblings(node));
-    } else {
-        // Inactive link
-        document.querySelector('#context-menu-toggle-right-siblings').classList.add('deactivated');
-    }
+  // Collapse
+  if (node.children || node.collapsedChildren) {
+    // Active link
+    document
+      .querySelector("#context-menu-collapse")
+      .classList.remove("deactivated");
+    document
+      .querySelector("#context-menu-collapse")
+      .addEventListener("click", () => collapseAction(node));
+  } else {
+    // Inactive link
+    document
+      .querySelector("#context-menu-collapse")
+      .classList.add("deactivated");
+  }
+
+  // Hide left siblings
+  if (
+    node.parent?.children?.length > 1 &&
+    node.parent.children[0].data.name !== node.data.name
+  ) {
+    // Active link
+    document
+      .querySelector("#context-menu-toggle-left-siblings")
+      .addEventListener("click", () => toggleLeftSiblings(node));
+  } else {
+    // Inactive link
+    document
+      .querySelector("#context-menu-toggle-left-siblings")
+      .classList.add("deactivated");
+  }
+
+  // Hide right siblings
+  if (
+    node.parent?.children?.length > 1 &&
+    node.parent.children[node.parent.children.length - 1].data.name !==
+      node.data.name
+  ) {
+    // Active link
+    document
+      .querySelector("#context-menu-toggle-right-siblings")
+      .addEventListener("click", () => toggleRightSiblings(node));
+  } else {
+    // Inactive link
+    document
+      .querySelector("#context-menu-toggle-right-siblings")
+      .classList.add("deactivated");
+  }
+
+  // Highlight constraints
+  if (node.data.constraints.length) {
+    // Active link
+    console.log(node.data.constraints);
+    document
+      .querySelector("#context-menu-highlight-constraints")
+      .addEventListener("click", () => {
+        node.data.constraints.forEach((constraint) =>
+          constraint.toggleHighlighted()
+        );
+        updateSvg();
+      });
+  } else {
+    // Inactive link
+    document
+      .querySelector("#context-menu-highlight-constraints")
+      .classList.add("deactivated");
+  }
 }
 
 function closeContextMenu() {
-    document.querySelectorAll('.context-menu-active').forEach(e => {
-        e.classList.remove('context-menu-active');
-    });
-    const contextMenu = document.querySelector('.context-menu');
-    const contextMenuClone = contextMenu.cloneNode(true);
-    contextMenu.parentNode.replaceChild(contextMenuClone, contextMenu);
+  document.querySelectorAll(".context-menu-active").forEach((e) => {
+    e.classList.remove("context-menu-active");
+  });
+  const contextMenu = document.querySelector(".context-menu");
+  const contextMenuClone = contextMenu.cloneNode(true);
+  contextMenu.parentNode.replaceChild(contextMenuClone, contextMenu);
 }
 
 function toggleLeftSiblings(node) {
-    const parent = node.parent;
+  const parent = node.parent;
 
-    if (parent.areLeftChildrenHidden) {
-        // Unhide hidden children.
-        parent.children = [...parent.leftHiddenChildren, ...parent.children.slice(1)];
-        parent.leftHiddenChildren = null;
-    } else {
-        // Hide all nodes left of specified node.
-        parent.leftHiddenChildren = [];
-        for (child of parent.children) {
-            if (child.id === node.id) break;
-            parent.leftHiddenChildren.push(child);
-        }
-        parent.children = parent.children.slice(parent.leftHiddenChildren.length);
-
-        // Add pseudo node.
-        const newNodeLeft = d3.hierarchy(new PseudoNode('left'));
-        newNodeLeft.parent = parent;
-        parent.children = [newNodeLeft, ...parent.children];
+  if (parent.areLeftChildrenHidden) {
+    // Unhide hidden children.
+    parent.children = [
+      ...parent.leftHiddenChildren,
+      ...parent.children.slice(1),
+    ];
+    parent.leftHiddenChildren = null;
+  } else {
+    // Hide all nodes left of specified node.
+    parent.leftHiddenChildren = [];
+    for (child of parent.children) {
+      if (child.id === node.id) break;
+      parent.leftHiddenChildren.push(child);
     }
-    
-    // Toggle hidden.
-    parent.areLeftChildrenHidden = !parent.areLeftChildrenHidden;
-    
-    closeContextMenu();
-    updateSvg();
-    focusNode(node);
+    parent.children = parent.children.slice(parent.leftHiddenChildren.length);
+
+    // Add pseudo node.
+    const newNodeLeft = d3.hierarchy(new PseudoNode("left"));
+    newNodeLeft.parent = parent;
+    parent.children = [newNodeLeft, ...parent.children];
+  }
+
+  // Toggle hidden.
+  parent.areLeftChildrenHidden = !parent.areLeftChildrenHidden;
+
+  closeContextMenu();
+  updateSvg();
+  focusNode(node);
 }
 
 function toggleRightSiblings(node) {
-    const parent = node.parent;
-    
-    if (parent.areRightChildrenHidden) {
-        // Unhide hidden children.
-        parent.children = [...parent.children.slice(0, -1), ...parent.rightHiddenChildren];
-        parent.rightHiddenChildren = null;
-    } else {
-        // Hide all nodes right of specified node.
-        parent.rightHiddenChildren = [];
-        for (child of [...parent.children].reverse()) {
-            if (child.id === node.id) break;
-            parent.rightHiddenChildren.push(child);
-        }
-        parent.children = parent.children.slice(0, -parent.rightHiddenChildren.length);
+  const parent = node.parent;
 
-        // Add pseudo node.
-        const newNodeRight = d3.hierarchy(new PseudoNode('right'));
-        newNodeRight.parent = parent;
-        parent.children = [...parent.children, newNodeRight];
+  if (parent.areRightChildrenHidden) {
+    // Unhide hidden children.
+    parent.children = [
+      ...parent.children.slice(0, -1),
+      ...parent.rightHiddenChildren,
+    ];
+    parent.rightHiddenChildren = null;
+  } else {
+    // Hide all nodes right of specified node.
+    parent.rightHiddenChildren = [];
+    for (child of [...parent.children].reverse()) {
+      if (child.id === node.id) break;
+      parent.rightHiddenChildren.push(child);
     }
-    
-    // Toggle hidden.
-    parent.areRightChildrenHidden = !parent.areRightChildrenHidden;
+    parent.children = parent.children.slice(
+      0,
+      -parent.rightHiddenChildren.length
+    );
 
-    closeContextMenu();
-    updateSvg();
-    focusNode(node);
+    // Add pseudo node.
+    const newNodeRight = d3.hierarchy(new PseudoNode("right"));
+    newNodeRight.parent = parent;
+    parent.children = [...parent.children, newNodeRight];
+  }
+
+  // Toggle hidden.
+  parent.areRightChildrenHidden = !parent.areRightChildrenHidden;
+
+  closeContextMenu();
+  updateSvg();
+  focusNode(node);
 }

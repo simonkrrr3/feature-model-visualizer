@@ -29,7 +29,11 @@ class Constraint {
             this.color = CONSTRAINT_HIGHLIGHT_COLORS.pop();
         }
         this.isHighlighted = !this.isHighlighted;
-        this.getAllVars().forEach((child) => child.toggleHighlighted());
+        this.getAllVars().forEach((child) => {
+            child.toggleHighlighted();
+            child.featureNode.uncollapse(true);
+        });
+        updateCollapsing();
     }
 
     toString() {

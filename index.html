@@ -10,8 +10,14 @@
     <script src="./libs/d3-hierarchy.js"></script>
     <script src="./libs/d3-flextree.js"></script>
     <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
 
+    <script src="levenshtein.js"></script>
     <script src="constants.js" defer></script>
     <script src="featureNode.js" defer></script>
     <script src="featureModelData.js" defer></script>
@@ -30,7 +36,15 @@
     <nav class="navbar navbar-expand-lg bg-light">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">DDueruem</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -39,14 +53,33 @@
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
             <li>
-              <a id="navigation-menu-count" class="nav-link" aria-current="page" href="#">Count</a>
+              <a
+                id="navigation-menu-count"
+                class="nav-link"
+                aria-current="page"
+                href="#"
+                >Count</a
+              >
             </li>
           </ul>
           <form class="form-inline my-2 my-lg-0">
-            <input id="vertical-spacing" class="form-control me-2" type="range" min="40" max="300" value="75">
+            <input
+              id="vertical-spacing"
+              class="form-control me-2"
+              type="range"
+              min="40"
+              max="300"
+              value="75"
+            />
           </form>
           <form class="form-inline my-2 my-lg-0">
-            <input id="feature-search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <input
+              id="feature-search"
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
           </form>
         </div>
       </div>
@@ -54,15 +87,14 @@
 
     <div class="svg-container"></div>
 
-    <div class="feature-model-constraints">
-      Should disappear
-    </div>
+    <div class="feature-model-constraints">Should disappear</div>
 
     <div class="context-menu">
       <ul>
         <li id="context-menu-collapse">Collapse</li>
         <li id="context-menu-toggle-left-siblings">Toggle left siblings</li>
         <li id="context-menu-toggle-right-siblings">Toggle right siblings</li>
+        <li id="context-menu-highlight-constraints">Highlight constraints</li>
       </ul>
     </div>
   </body>

@@ -1,42 +1,50 @@
-document.querySelector('#feature-search').addEventListener('keyup', (e) => {
-        allNodes.forEach((d) => {
-            d.data.isSearched = false;
-        });
-        
-        const paths = searchTree(rootNode, e.target.value, []);
+document.querySelector("#feature-search").addEventListener("keyup", (e) => {
+  const search = e.target.value;
 
-        if (paths) {        
-            paths.forEach((d3Node) => d3Node.data.isSearched = true);
-            allNodes.forEach((d3Node) => d3Node.data.collapse());
+  allNodes.forEach((d) => {
+    d.data.isSearched = false;
+  });
 
-            const foundD3Node = paths[paths.length - 1];
-            foundD3Node.data.uncollapse(true);
-            updateCollapsing();
-            updateSvg();
-            focusNode(foundD3Node);
-        } else {
-            updateSvg();
-        } //TODO: Show error icon
-        
-    });
+  if (search !== "") {
+    const foundD3Node = findNode(search);
+    const paths = foundD3Node.data.getAllNodesToRoot();
 
-function searchTree(node, search, path){
-    //TODO: Add levenshtein distance?
-    if (search.length > 0 && node.data.name.includes(search)) { //if search is found return, add the object to the path and return it
-        path.push(node);
-        return path;
-    } else if (node.children || node.collapsedChildren) { //if children are collapsed d3 object will have them instantiated as collapsedChildren
-        let children = (node.children) ? node.children : node.collapsedChildren;
-        for(let i = 0; i < children.length; i++){
-            path.push(node); // we assume this path is the right one
-            let found = searchTree(children[i], search, path);
-            if(found){ // we were right, this should return the bubbled-up path from the first if statement
-                return found;
-            } else { //we were wrong, remove this parent from the path and continue iterating
-                path.pop();
-            }
-        }
-    } else { //not the right object, return false so it will continue to iterate in the loop
-        return false;
+    paths.forEach((node) => (node.isSearched = true));
+    allNodes.forEach((d3Node) => d3Node.data.collapse());
+
+    foundD3Node.data.uncollapse(true);
+    updateCollapsing();
+    updateSvg();
+    focusNode(foundD3Node);
+  } else {
+    updateSvg();
+  }
+});
+
+function findNode(search) {
+  [distance, node] = allNodes.reduce(
+    ([previousDistance, previousNode], currentNode) => {
+      const currentNodeName = currentNode.data.name.toLowerCase();
+      if (
+        currentNodeName !== search.toLowerCase() &&
+        currentNodeName.includes(search.toLowerCase())
+      ) {
+        return [1, currentNode];
+      }
+
+      const currentDistance = levenshtein(
+        currentNode.data.name.toLowerCase(),
+        search.toLowerCase()
+      );
+      if (previousDistance <= currentDistance) {
+        return [previousDistance, previousNode];
+      } else {
+        return [currentDistance, currentNode];
+      }
     }
+  );
+
+  // TODO: If levenshtein distance is above a good value dont display anything?
+
+  return node;
 }
