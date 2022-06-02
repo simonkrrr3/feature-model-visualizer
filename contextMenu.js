@@ -70,7 +70,6 @@ function contextMenu(e, node) {
   // Highlight constraints
   if (node.data.constraints.length) {
     // Active link
-    console.log(node.data.constraints);
     document
       .querySelector("#context-menu-highlight-constraints")
       .addEventListener("click", () => {
