@@ -6,13 +6,14 @@ document.querySelector('#feature-search').addEventListener('keyup', (e) => {
         const paths = searchTree(rootNode, e.target.value, []);
 
         if (paths) {        
-            paths.forEach((d) => d.data.isSearched = true);
-            allNodes.forEach((d) => {
-                collapse(d, d.data.isSearched);
-            });
+            paths.forEach((d3Node) => d3Node.data.isSearched = true);
+            allNodes.forEach((d3Node) => d3Node.data.collapse());
 
+            const foundD3Node = paths[paths.length - 1];
+            foundD3Node.data.uncollapse(true);
+            updateCollapsing();
             updateSvg();
-            focusNode(paths[paths.length - 1]);
+            focusNode(foundD3Node);
         } else {
             updateSvg();
         } //TODO: Show error icon

@@ -6,6 +6,10 @@ document.querySelector('.feature-model-constraints').addEventListener('mouseente
 
         constraintElement.addEventListener('click', (e) => {
             constraints[e.target.dataset.constraint].toggleHighlighted();
+
+            // Uncollapse all constraints
+            constraints[e.target.dataset.constraint].getAllVars().forEach(constraint => constraint.isCollapsed = false);
+
             updateSvg();
         })
     });

@@ -1,19 +1,20 @@
 class FeatureNode {
-    constructor(name, groupType, isRoot, mandatory, abstract, children) {
+    constructor(parent, name, groupType, mandatory, abstract) {
+        this.parent = parent;
         this.name = name;
-        this.children = children;
+        this.children = [];
         this.groupType = groupType;
-        this.isRoot = isRoot;
+        this.isRoot = parent === null;
         this.isMandatory = mandatory;
         this.isAbstract = abstract;
-        this.isLeaf = children.length === 0;
         this.color = this.isAbstract ? '#ebebff' : '#ccccff';
         this.constraints = [];
         this.constraintsHighlighted = [];
+        this.isCollapsed = true;
     }
 
     childrenCount() {
-        if (this.isLeaf) {
+        if (this.isLeaf()) {
             return 0 ;
         } else {
             return this.children.length; 
@@ -21,7 +22,7 @@ class FeatureNode {
     }
 
     totalSubnodesCount() {
-        if (this.isLeaf) {
+        if (this.isLeaf()) {
             return 0;
         } else {
             let totalSubnodesCount = this.children.length;
@@ -42,6 +43,25 @@ class FeatureNode {
     
     isAlt() {
         return this.groupType === 'alt';
+    }
+
+    isLeaf() {
+        return this.children.length === 0;
+    }
+
+    uncollapse(toRoot = true) {
+        this.isCollapsed = false;
+        if (this.parent && toRoot) {
+            this.parent.uncollapse();
+        }
+    }
+
+    collapse() {
+        this.isCollapsed = true;
+    }
+
+    toggleCollapse() {
+        this.isCollapsed = !this.isCollapsed;
     }
 }
 

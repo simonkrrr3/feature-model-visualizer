@@ -1,5 +1,6 @@
 function collapseAction(node) {
-    collapse(node);
+    node.data.toggleCollapse();
+    updateCollapsing();
     closeContextMenu();
     updateSvg();
 }

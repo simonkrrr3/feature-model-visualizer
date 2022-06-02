@@ -13,26 +13,27 @@ function xmlToJson() {
     const struct = xmlDocument.querySelector('struct');
     const constraints = xmlDocument.querySelector('constraints');
 
-    const featuresToReturn = getChildrenOfFeature(struct, true);
+    const featuresToReturn = getChildrenOfFeature(struct, null);
     const constraintsToReturn = getConstraints(constraints);
     console.log('Parsertime', performance.now() - start);
     return [featuresToReturn[0], constraintsToReturn];
 }
 
-function getChildrenOfFeature(struct, isRoot) {
+function getChildrenOfFeature(struct, parent, isRoot) {
     let toReturn = [];
 
     for (child of struct.childNodes) {
         // To remove #text nodes, as they don't have a tagName
         if (child.tagName) {
             let toAppend = new FeatureNode(
+                parent,
                 child.getAttribute('name'),
                 child.tagName,
-                isRoot,
                 child.getAttribute('mandatory') === 'true',
                 child.getAttribute('abstract') === 'true',
-                getChildrenOfFeature(child, false)
             );
+            toAppend.children = getChildrenOfFeature(child, toAppend);
+
             featureMap[toAppend.name] = toAppend;
             toReturn.push(toAppend);
         }
