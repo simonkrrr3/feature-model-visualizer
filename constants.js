@@ -20,7 +20,7 @@ let nodeIdCounter = 0;
 
 const PSEUDO_NODE_SIZE = 20;
 
-const CONSTRAINT_HIGHLIGHT_COLORS = [
+let CONSTRAINT_HIGHLIGHT_COLORS = [
     "aqua",
     "blueviolet",
     "chartreuse",
@@ -29,9 +29,10 @@ const CONSTRAINT_HIGHLIGHT_COLORS = [
     "forestgreen",
     "red",
     "yellow",
-    "inidigo",
+    "indigo",
 ];
 
-let CONSTRAINT_HIGHLIGHT_COLORS_COUNTER = 0;
-
 const STROKE_WIDTH_CONSTANT = 4;
+
+const NODE_COLOR = "#ccccff";
+const NODE_ABSTRACT_COLOR = "#ebebff";

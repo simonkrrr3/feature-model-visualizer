@@ -6,7 +6,7 @@ document.querySelector('#navigation-menu-count').addEventListener('click', () =>
 
     if (isColorCoded) {
         for (const node of allNodes) {
-            node.data.color = null;
+            node.data.color = node.data.isAbstract ? NODE_ABSTRACT_COLOR : NODE_COLOR;
         }
     } else {
         const count = {};

@@ -23,10 +23,13 @@ class Constraint {
     }
 
     toggleHighlighted() {
+        if (this.isHighlighted) {
+            CONSTRAINT_HIGHLIGHT_COLORS.push(this.color);
+        } else {
+            this.color = CONSTRAINT_HIGHLIGHT_COLORS.pop();
+        }
         this.isHighlighted = !this.isHighlighted;
-        CONSTRAINT_HIGHLIGHT_COLORS_COUNTER = ++CONSTRAINT_HIGHLIGHT_COLORS_COUNTER % CONSTRAINT_HIGHLIGHT_COLORS.length;
-        this.color = CONSTRAINT_HIGHLIGHT_COLORS[CONSTRAINT_HIGHLIGHT_COLORS_COUNTER];
-        this.children.forEach((child) => child.toggleHighlighted());
+        this.getAllVars().forEach((child) => child.toggleHighlighted());
     }
 
     toString() {
@@ -44,7 +47,6 @@ class Constraint {
 
 class VarConstraint {
     constructor(featureNodeName, featureMap, rootConstraint) {
-        this.isHighlighted = false;
         this.featureNode = featureMap[featureNodeName];
         this.rootConstraint = rootConstraint;
         
@@ -54,8 +56,7 @@ class VarConstraint {
     }
 
     toggleHighlighted() {
-        this.isHighlighted = !this.isHighlighted;
-        if (this.isHighlighted) {
+        if (this.rootConstraint.isHighlighted) {
             if (!this.featureNode.constraintsHighlighted.includes(this.rootConstraint)) {
                 this.featureNode.constraintsHighlighted.push(this.rootConstraint);
             }

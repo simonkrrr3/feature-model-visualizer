@@ -7,7 +7,7 @@ class FeatureNode {
         this.isRoot = parent === null;
         this.isMandatory = mandatory;
         this.isAbstract = abstract;
-        this.color = this.isAbstract ? '#ebebff' : '#ccccff';
+        this.color = this.isAbstract ? NODE_ABSTRACT_COLOR : NODE_COLOR;
         this.constraints = [];
         this.constraintsHighlighted = [];
         this.isCollapsed = true;

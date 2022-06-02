@@ -70,8 +70,7 @@ function updateFeatureNodes(visibleNodes) {
         .append("rect")
         .attr("x", (node) => -calcRectWidth(node) / 2)
         .attr("height", RECT_HEIGHT)
-        .attr("width", (node) => calcRectWidth(node))
-        .attr("fill", "#ccccff");
+        .attr("width", (node) => calcRectWidth(node));
     rectAndTextEnter
         .append("text")
         .attr("dy", RECT_HEIGHT / 2 + 5.5)
