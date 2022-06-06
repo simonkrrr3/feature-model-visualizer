@@ -75,7 +75,17 @@ class FeatureNode {
 }
 
 class PseudoNode {
-  constructor(side) {
-    this.side = side;
+  constructor(nodes) {
+    this.hiddenChildren = [];
+
+    nodes.forEach((d3Node) => {
+      if (d3Node.data instanceof PseudoNode) {
+        this.hiddenChildren = [...this.hiddenChildren, ...d3Node.data.hiddenChildren];
+      } else if (d3Node.data instanceof FeatureNode) {
+        this.hiddenChildren = [...this.hiddenChildren, d3Node];
+      }
+    });
+
+    console.log(this.hiddenChildren);
   }
 }
