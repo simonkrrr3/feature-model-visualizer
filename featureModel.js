@@ -40,13 +40,7 @@ const featureNodesContainer = svgContent
     .append("g")
     .classed("feature-node-container", true);
 
-// Collapses all nodes after depth 1.
-rootNode.children.forEach((child) =>
-    child.eachAfter((node) => node.data.collapse())
-);
-rootNode.data.uncollapse(true);
-updateCollapsing();
-
+initialize();
 updateSvg();
 
 function updateFeatureNodes(visibleNodes) {
@@ -350,4 +344,14 @@ function calculateTriangle() {
 
      
     return [`${ax},${ay}`, `${bx},${by}`, `${cx},${cy}`]
+}
+
+function initialize() {
+    // Collapses all nodes after depth 1.
+    rootNode.children.forEach((child) =>
+        child.eachAfter((node) => node.data.collapse())
+    );
+    rootNode.data.uncollapse(true);
+    updateCollapsing();
+    updateSvg();
 }

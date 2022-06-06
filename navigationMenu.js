@@ -14,6 +14,10 @@ document
   .addEventListener("click", () => colorNodes(countTotalChildren, "orange"));
 
 document
+  .querySelector("#navigation-menu-reset-view")
+  .addEventListener("click", () => initialize());
+  
+document
   .querySelector("#navigation-menu-shortened-name")
   .addEventListener("click", (e) => displayShortenedName(e.target));
 
