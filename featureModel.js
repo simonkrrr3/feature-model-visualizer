@@ -13,7 +13,7 @@ const allNodes = rootNode.descendants();
 
 const zoom = d3
     .zoom()
-    .scaleExtent([0.1, 8])
+    //.scaleExtent([0.1, 8])
     .on("zoom", (event) => svgContent.attr("transform", event.transform));
 
 // Create svg-container.
@@ -282,6 +282,8 @@ function updateLinks(visibleNodes) {
 function updateSvg() {
     const start = performance.now();
 
+    console.log(document.querySelector("svg > g").getBBox());
+
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
     const visibleNodes = flexLayout(rootNode).descendants();
 
@@ -346,12 +348,43 @@ function calculateTriangle() {
     return [`${ax},${ay}`, `${bx},${by}`, `${cx},${cy}`]
 }
 
-function initialize() {
+function initialize(uncollapsedLevels = 4, maxChildrenCount = 3) {
     // Collapses all nodes after depth 1.
-    rootNode.children.forEach((child) =>
-        child.eachAfter((node) => node.data.collapse())
-    );
-    rootNode.data.uncollapse(true);
+    allNodes.forEach(d3Node => d3Node.data.collapse());
+
+    let currentChildren = [rootNode.data];
+    for (let i = 1; i <= uncollapsedLevels; i++) {
+        currentChildren.forEach(child => {
+            if (child.children.length <= maxChildrenCount) {
+                child.uncollapse(false);
+            }
+        });
+        currentChildren = currentChildren.map((parent) => parent.children.length <= maxChildrenCount ? parent.children : []).flat();
+
+        if (currentChildren.length === 0) {
+            break;
+        }
+    }
+
+    // TODO: Reset zoom and translation
+
     updateCollapsing();
     updateSvg();
+}
+
+function zoomFit(padding = 0.75) {
+	let bounds = document.querySelector("svg > g").getBBox();
+	let fullWidth = document.querySelector('svg').getBoundingClientRect().width,
+	    fullHeight = document.querySelector('svg').getBoundingClientRect().height;
+	let width = bounds.width,
+	    height = bounds.height;
+	let midX = bounds.x + width / 2,
+	    midY = bounds.y + height / 2;
+	if (width == 0 || height == 0) return; // nothing to fit
+	let scale = padding / Math.max(width / fullWidth, height / fullHeight);
+
+    console.log(width, bounds.x, midX);
+	d3.select("svg")
+        .call(zoom.translateTo, midX, midY)
+        .call(zoom.scaleTo, scale);
 }

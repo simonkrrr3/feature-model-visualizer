@@ -38,9 +38,9 @@ class Constraint {
 
     toString() {
         if (this.operator === this.operators.not) {
-            return this.operators.not + " " + this.children.map((child) => child.toString());
+            return this.operators.not + "(" + this.children.map((child) => child.toString()) + ")";
         } else {
-            return this.children.map((child) => child.toString()).join(` ${this.operator} `);
+            return "(" + this.children.map((child) => child.toString()).join(` ${this.operator} `) + ")";
         }
     }
 
