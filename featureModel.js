@@ -68,14 +68,11 @@ function updateFeatureNodes(visibleNodes) {
         .classed("rect-and-text", true);
     rectAndTextEnter
         .append("rect")
-        .attr("x", (node) => -calcRectWidth(node) / 2)
-        .attr("height", RECT_HEIGHT)
-        .attr("width", (node) => calcRectWidth(node));
+        .attr("height", RECT_HEIGHT);
     rectAndTextEnter
         .append("text")
         .attr("dy", RECT_HEIGHT / 2 + 5.5)
-        .attr("font-size", FEATURE_FONT_SIZE)
-        .text((node) => node.data.name);
+        .attr("font-size", FEATURE_FONT_SIZE);
 
     featureNodeEnter
         .filter((node) => !node.data.isRoot && node.parent.data.isAnd())
@@ -95,12 +92,7 @@ function updateFeatureNodes(visibleNodes) {
     const childrenCountEnter = featureNodeEnter
         .filter((node) => !node.data.isLeaf())
         .append("g")
-        .classed("children-count", true)
-        .attr(
-            "transform",
-            (node) =>
-                "translate(" + calcRectWidth(node) / 2 + ", " + RECT_HEIGHT + ")"
-        );
+        .classed("children-count", true);
     childrenCountEnter
         .append("circle")
         .attr(
@@ -167,10 +159,21 @@ function updateFeatureNodes(visibleNodes) {
     rectAndTextUpdate
         .select("rect")
         .classed("is-searched-feature", (node) => node.data.isSearched)
-        .attr("fill", (node) => node.data.color);
+        .attr("fill", (node) => node.data.color)
+        .attr("x", (node) => -calcRectWidth(node) / 2)
+        .attr("width", (node) => calcRectWidth(node));
     rectAndTextUpdate
         .select("text")
-        .attr("font-style", (node) => (node.data.isAbstract ? "italic" : "normal"));
+        .attr("font-style", (node) => (node.data.isAbstract ? "italic" : "normal"))
+        .text((node) => isShortenedName ? node.data.displayName : node.data.name);
+
+    const childrenCountUpdate = featureNodeUpdate
+    .select('g.children-count')
+        .attr(
+            "transform",
+            (node) =>
+                "translate(" + calcRectWidth(node) / 2 + ", " + RECT_HEIGHT + ")"
+        );
 
     const pseudoNodeUpdate = pseudoNodeEnter.merge(pseudoNode);
     pseudoNodeUpdate.attr(
@@ -299,7 +302,7 @@ function collapseShortcut(event, node) {
 function calcRectWidth(node) {
     if (node.data instanceof FeatureNode) {
         return (
-            node.data.name.length *
+            (isShortenedName ? node.data.displayName.length : node.data.name.length) *
             (FEATURE_FONT_SIZE * MONOSPACE_HEIGHT_WIDTH_FACTOR) +
             RECT_MARGIN.left +
             RECT_MARGIN.right

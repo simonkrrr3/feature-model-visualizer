@@ -1,4 +1,5 @@
 let isColorCoded = false;
+let isShortenedName = false;
 
 document
   .querySelector("#navigation-menu-count")
@@ -11,6 +12,10 @@ document
 document
   .querySelector("#navigation-menu-count-total-children")
   .addEventListener("click", () => colorNodes(countTotalChildren, "orange"));
+
+document
+  .querySelector("#navigation-menu-shortened-name")
+  .addEventListener("click", (e) => displayShortenedName(e.target));
 
 function colorNodes(coloringFunction, color = "green") {
   if (isColorCoded) {
@@ -78,4 +83,9 @@ function countTotalChildren() {
   }
 
   return [count, max];
+}
+
+function displayShortenedName(checkbox) {
+  isShortenedName = checkbox.checked;
+  updateSvg();
 }

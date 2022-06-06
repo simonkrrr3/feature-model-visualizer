@@ -53,3 +53,5 @@ const STROKE_WIDTH_CONSTANT = 4;
 
 const NODE_COLOR = "#ccccff";
 const NODE_ABSTRACT_COLOR = "#ebebff";
+
+const DISPLAY_NAME_LENGTH = 8;

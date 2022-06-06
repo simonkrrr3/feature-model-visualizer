@@ -2,6 +2,7 @@ class FeatureNode {
   constructor(parent, name, groupType, mandatory, abstract) {
     this.parent = parent;
     this.name = name;
+    this.displayName = name.slice(0, DISPLAY_NAME_LENGTH) + '...';
     this.children = [];
     this.groupType = groupType;
     this.isRoot = parent === null;
