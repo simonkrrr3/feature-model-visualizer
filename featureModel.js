@@ -94,20 +94,29 @@ function updateFeatureNodes(visibleNodes) {
         .append("g")
         .classed("children-count", true);
     childrenCountEnter
-        .append("circle")
+        .append("polygon")
+        .attr('fill', 'white')
         .attr(
-            "r",
-            (node) =>
-                (node.data.childrenCount() + "|" + node.data.totalSubnodesCount())
-                    .length * CHILDREN_COUNT_LETTERS_TO_RADIUS
+            "points", () => calculateTriangle()
+            //(node) =>
+            //   (node.data.childrenCount() + "|" + node.data.totalSubnodesCount())
+            //        .length * CHILDREN_COUNT_LETTERS_TO_RADIUS
         );
     childrenCountEnter
         .append("text")
         .classed("children-count-text", true)
-        .attr("dy", 2.5)
+        .attr("dy", 5)
         .attr("font-size", CHILREN_COUNT_FONT_SIZE)
         .text(
-            (node) => node.data.childrenCount() + "|" + node.data.totalSubnodesCount()
+            (node) => node.data.childrenCount()
+        );
+    childrenCountEnter
+        .append("text")
+        .classed("children-count-text", true)
+        .attr("dy", 15)
+        .attr("font-size", CHILREN_COUNT_FONT_SIZE)
+        .text(
+            (node) => node.data.totalSubnodesCount()
         );
 
     const pseudoNode = featureNodesContainer.selectAll("g.pseudo-node").data(
@@ -328,4 +337,17 @@ function updateCollapsing() {
             }
         }
     });
+}
+
+function calculateTriangle() {
+    const base = 35;
+
+    const h = (Math.sin(60) * base);
+
+    const [ax, ay] = [-(base / 2), base / 2];
+    const [bx, by] = [base / 2, base / 2];
+    const [cx, cy] = [0, h]
+
+     
+    return [`${ax},${ay}`, `${bx},${by}`, `${cx},${cy}`]
 }
