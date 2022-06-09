@@ -85,7 +85,5 @@ class PseudoNode {
         this.hiddenChildren = [...this.hiddenChildren, d3Node];
       }
     });
-
-    console.log(this.hiddenChildren);
   }
 }

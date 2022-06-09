@@ -66,7 +66,7 @@ function countDirectChildren() {
 		count[node.data.name] = node.data.childrenCount();
 		max = max < count[node.data.name] ? count[node.data.name] : max;
 	}
-	console.log(count);
+	
 	return [count, max];
 }
 

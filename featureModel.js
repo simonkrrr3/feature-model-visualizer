@@ -282,8 +282,6 @@ function updateLinks(visibleNodes) {
 function updateSvg() {
     const start = performance.now();
 
-    console.log(document.querySelector("svg > g").getBBox());
-
     // Flexlayout belongs to a d3-plugin that calculates the width between all nodes dynamically.
     const visibleNodes = flexLayout(rootNode).descendants();
 
@@ -383,8 +381,51 @@ function zoomFit(padding = 0.75) {
 	if (width == 0 || height == 0) return; // nothing to fit
 	let scale = padding / Math.max(width / fullWidth, height / fullHeight);
 
-    console.log(width, bounds.x, midX);
 	d3.select("svg")
         .call(zoom.translateTo, midX, midY)
         .call(zoom.scaleTo, scale);
+}
+
+
+function toggleLeftSiblings(d3Node) {
+	const parent = d3Node.parent;
+
+	const d3NodeIndex = parent.children.indexOf(d3Node);
+	if (parent.children[d3NodeIndex - 1].data instanceof PseudoNode) {
+		const beforePseudoNode = parent.children.slice(0, d3NodeIndex - 1);
+		const insidePseudoNode = parent.children[d3NodeIndex - 1].data.hiddenChildren;
+		const afterPseudoNode = parent.children.slice(d3NodeIndex);
+
+		parent.children = [...beforePseudoNode, ...insidePseudoNode, ...afterPseudoNode];
+	} else {
+		const newPseudoNode = new PseudoNode(parent.children.slice(0, d3NodeIndex));
+		parent.children = [d3.hierarchy(newPseudoNode), ...parent.children.slice(d3NodeIndex)];
+	}
+
+	closeContextMenu();
+	updateSvg();
+	focusNode(d3Node);
+}
+
+function toggleRightSiblings(d3Node) {
+	const parent = d3Node.parent;
+
+	const d3NodeIndex = parent.children.indexOf(d3Node);
+	if (parent.children[d3NodeIndex + 1].data instanceof PseudoNode) {
+		const beforePseudoNode = parent.children.slice(0, d3NodeIndex + 1);
+		const insidePseudoNode = parent.children[d3NodeIndex + 1].data.hiddenChildren;
+		const afterPseudoNode = parent.children.slice(d3NodeIndex + 2);
+
+		console.log(beforePseudoNode, insidePseudoNode, afterPseudoNode);
+
+		parent.children = [...beforePseudoNode, ...insidePseudoNode, ...afterPseudoNode];
+	} else {
+		const newPseudoNode = new PseudoNode(parent.children.slice(d3NodeIndex + 1));
+		parent.children = [...parent.children.slice(0, d3NodeIndex + 1), d3.hierarchy(newPseudoNode)];
+		console.log(newPseudoNode, parent.children);
+	}
+
+	closeContextMenu();
+	updateSvg();
+	focusNode(d3Node);
 }
