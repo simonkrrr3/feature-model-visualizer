@@ -10,6 +10,7 @@ let flexLayout = d3
 // Create root-feature-node with d3 and the data of the feature-model.
 const rootNode = d3.hierarchy(featureModelRawData, (node) => node.children);
 const allNodes = rootNode.descendants();
+allNodes.forEach((d3Node) => d3Node.allChildren = d3Node.children);
 
 const zoom = d3
     .zoom()
@@ -121,11 +122,11 @@ function updateFeatureNodes(visibleNodes) {
         .enter()
         .append("g")
         .classed("pseudo-node", true)
-        .on("click", (event, node) =>
-            node.data.side === "left"
-                ? toggleLeftSiblings(node)
-                : toggleRightSiblings(node)
-        );
+        .on("click", (_, d3Node) => { 
+            d3Node.data.unhideHiddenNodes();
+            updateHiding(d3Node.parent);
+            updateSvg(); 
+        });
     pseudoNodeEnter.append("circle").attr("r", PSEUDO_NODE_SIZE);
     pseudoNodeEnter
         .append("text")
@@ -386,46 +387,22 @@ function zoomFit(padding = 0.75) {
         .call(zoom.scaleTo, scale);
 }
 
-
-function toggleLeftSiblings(d3Node) {
-	const parent = d3Node.parent;
-
-	const d3NodeIndex = parent.children.indexOf(d3Node);
-	if (parent.children[d3NodeIndex - 1].data instanceof PseudoNode) {
-		const beforePseudoNode = parent.children.slice(0, d3NodeIndex - 1);
-		const insidePseudoNode = parent.children[d3NodeIndex - 1].data.hiddenChildren;
-		const afterPseudoNode = parent.children.slice(d3NodeIndex);
-
-		parent.children = [...beforePseudoNode, ...insidePseudoNode, ...afterPseudoNode];
-	} else {
-		const newPseudoNode = new PseudoNode(parent.children.slice(0, d3NodeIndex));
-		parent.children = [d3.hierarchy(newPseudoNode), ...parent.children.slice(d3NodeIndex)];
-	}
-
-	closeContextMenu();
-	updateSvg();
-	focusNode(d3Node);
-}
-
-function toggleRightSiblings(d3Node) {
-	const parent = d3Node.parent;
-
-	const d3NodeIndex = parent.children.indexOf(d3Node);
-	if (parent.children[d3NodeIndex + 1].data instanceof PseudoNode) {
-		const beforePseudoNode = parent.children.slice(0, d3NodeIndex + 1);
-		const insidePseudoNode = parent.children[d3NodeIndex + 1].data.hiddenChildren;
-		const afterPseudoNode = parent.children.slice(d3NodeIndex + 2);
-
-		console.log(beforePseudoNode, insidePseudoNode, afterPseudoNode);
-
-		parent.children = [...beforePseudoNode, ...insidePseudoNode, ...afterPseudoNode];
-	} else {
-		const newPseudoNode = new PseudoNode(parent.children.slice(d3NodeIndex + 1));
-		parent.children = [...parent.children.slice(0, d3NodeIndex + 1), d3.hierarchy(newPseudoNode)];
-		console.log(newPseudoNode, parent.children);
-	}
-
-	closeContextMenu();
-	updateSvg();
-	focusNode(d3Node);
+function updateHiding(d3Parent) {
+    d3Parent.children = [];
+    
+    let isPreviousNodeHidden = false;
+    let currentPseudoNode;
+    d3Parent.allChildren.forEach((d3Child) => {
+        if (d3Child.data.isHidden && !isPreviousNodeHidden) {
+            currentPseudoNode = new PseudoNode(d3Child);
+            const d3PseudoNode = d3.hierarchy(currentPseudoNode);
+            d3PseudoNode.parent = d3Parent;
+            d3Parent.children.push(d3PseudoNode);
+        } else if (d3Child.data.isHidden && isPreviousNodeHidden) {
+            currentPseudoNode.hiddenD3Children.push(d3Child);
+        } else {
+            d3Parent.children.push(d3Child);
+        }
+        isPreviousNodeHidden = d3Child.data.isHidden;
+    });
 }

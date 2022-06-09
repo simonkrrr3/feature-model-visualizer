@@ -65,3 +65,29 @@ function closeContextMenu() {
 	const contextMenuClone = contextMenu.cloneNode(true);
 	contextMenu.parentNode.replaceChild(contextMenuClone, contextMenu);
 }
+
+function toggleLeftSiblings(d3Node) {
+	if (d3Node.data.getLeftSibling().isHidden) {
+		d3Node.data.unhideLeftSiblings();
+	} else {
+		d3Node.data.hideLeftSiblings();
+	}
+	
+	closeContextMenu();
+	updateHiding(d3Node.parent);
+	updateSvg();
+	focusNode(d3Node);
+}
+
+function toggleRightSiblings(d3Node) {
+	if (d3Node.data.getRightSibling().isHidden) {
+		d3Node.data.unhideRightSiblings();
+	} else {
+		d3Node.data.hideRightSiblings();
+	}
+	
+	closeContextMenu();
+	updateHiding(d3Node.parent);
+	updateSvg();
+	focusNode(d3Node);
+}

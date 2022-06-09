@@ -12,6 +12,7 @@ class FeatureNode {
     this.constraints = [];
     this.constraintsHighlighted = [];
     this.isCollapsed = true;
+    this.isHidden = false;
   }
 
   childrenCount() {
@@ -72,18 +73,60 @@ class FeatureNode {
       return [this, ...this.parent.getAllNodesToRoot()];
     }
   }
+
+  getLeftSibling() {
+    const index = this.parent.children.indexOf(this);
+    if (index == 0) return null;
+    return this.parent.children[index - 1];
+  }
+
+  getRightSibling() {
+    const index = this.parent.children.indexOf(this);
+    if (index == this.parent.children.length - 1) return null;
+    return this.parent.children[index + 1];
+  }
+
+  getLeftSiblings() {
+    const index = this.parent.children.indexOf(this);
+    return this.parent.children.slice(0, index);
+  }
+
+  getRightSiblings() {
+    const index = this.parent.children.indexOf(this);
+    return this.parent.children.slice(index + 1);
+  }
+
+  hideLeftSiblings() {
+    this.getLeftSiblings().forEach((sibling) => sibling.hide());
+  }
+
+  hideRightSiblings() {
+    this.getRightSiblings().forEach((sibling) => sibling.hide());
+  }
+
+  unhideLeftSiblings() {
+    this.getLeftSiblings().forEach((sibling) => sibling.unhide());
+  }
+
+  unhideRightSiblings() {
+    this.getRightSiblings().forEach((sibling) => sibling.unhide());
+  }
+
+  hide() {
+    this.isHidden = true;
+  }
+
+  unhide() {
+    this.isHidden = false;
+  }
 }
 
 class PseudoNode {
-  constructor(nodes) {
-    this.hiddenChildren = [];
+  constructor(d3Node) {
+    this.hiddenD3Children = [d3Node];
+  }
 
-    nodes.forEach((d3Node) => {
-      if (d3Node.data instanceof PseudoNode) {
-        this.hiddenChildren = [...this.hiddenChildren, ...d3Node.data.hiddenChildren];
-      } else if (d3Node.data instanceof FeatureNode) {
-        this.hiddenChildren = [...this.hiddenChildren, d3Node];
-      }
-    });
+  unhideHiddenNodes() {
+    this.hiddenD3Children.forEach((d3Node) => d3Node.data.unhide());
   }
 }
