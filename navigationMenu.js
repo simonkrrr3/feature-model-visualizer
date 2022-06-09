@@ -19,16 +19,16 @@ document.querySelector('#feature-max-children').addEventListener('change', (e) =
 
 function colorNodes(coloringFunction, color = 'green') {
 	if (isColorCoded) {
-		for (const node of allNodes) {
-			node.data.color = node.data.isAbstract ? NODE_ABSTRACT_COLOR : NODE_COLOR;
+		for (const d3Node of allD3Nodes) {
+			d3Node.data.color = d3Node.data.isAbstract ? NODE_ABSTRACT_COLOR : NODE_COLOR;
 		}
 	} else {
 		const [count, max] = coloringFunction(); // Must return {"nodeName": integer}
 		const colors = d3.scaleLinear().domain(d3.ticks(1, max, COLORING_MAP.length)).range(COLORING_MAP);
 
-		for (const node of allNodes) {
-			if (count[node.data.name] !== undefined && !node.data.isAbstract) {
-				node.data.color = colors(count[node.data.name]);
+		for (const d3Node of allD3Nodes) {
+			if (count[d3Node.data.name] !== undefined && !d3Node.data.isAbstract) {
+				d3Node.data.color = colors(count[d3Node.data.name]);
 			}
 		}
 	}
@@ -45,13 +45,13 @@ function colorNodes(coloringFunction, color = 'green') {
 function countNodes() {
 	let count = {};
 	let max = 0;
-	for (const node of allNodes) {
-		if (count[node.data.name]) {
-			count[node.data.name] += 1;
-			max = max < count[node.data.name] ? count[node.data.name] : max;
+	for (const d3Node of allD3Nodes) {
+		if (count[d3Node.data.name]) {
+			count[d3Node.data.name] += 1;
+			max = max < count[d3Node.data.name] ? count[d3Node.data.name] : max;
 		} else {
-			count[node.data.name] = 1;
-			max = max < count[node.data.name] ? count[node.data.name] : max;
+			count[d3Node.data.name] = 1;
+			max = max < count[d3Node.data.name] ? count[d3Node.data.name] : max;
 		}
 	}
 
@@ -62,9 +62,9 @@ function countDirectChildren() {
 	let count = {};
 	let max = 0;
 
-	for (const node of allNodes) {
-		count[node.data.name] = node.data.childrenCount();
-		max = max < count[node.data.name] ? count[node.data.name] : max;
+	for (const d3Node of allD3Nodes) {
+		count[d3Node.data.name] = d3Node.data.childrenCount();
+		max = max < count[d3Node.data.name] ? count[d3Node.data.name] : max;
 	}
 	
 	return [count, max];
@@ -74,9 +74,9 @@ function countTotalChildren() {
 	let count = {};
 	let max = 0;
 
-	for (const node of allNodes) {
-		count[node.data.name] = node.data.totalSubnodesCount();
-		max = max < count[node.data.name] ? count[node.data.name] : max;
+	for (const d3Node of allD3Nodes) {
+		count[d3Node.data.name] = d3Node.data.totalSubnodesCount();
+		max = max < count[d3Node.data.name] ? count[d3Node.data.name] : max;
 	}
 
 	return [count, max];

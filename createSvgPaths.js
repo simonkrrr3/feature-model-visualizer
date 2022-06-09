@@ -31,13 +31,13 @@ function toPath({x, y}) {
     return `${x},${y}`;
 }
 
-function createGroupSegment(node, radius) {
-    if (node.children && node.children.length > 1) {
+function createGroupSegment(d3Node, radius) {
+    if (d3Node.children && d3Node.children.length > 1) {
 
-        const firstChild = node.children[0].isPseudoElement ? node.children[1] : node.children[0];
-        const lastChild = node.children[node.children.length - 1].isPseudoElement ? node.children[node.children.length - 2] : node.children[node.children.length - 1];
+        const firstChild = d3Node.children[0].isPseudoElement ? d3Node.children[1] : d3Node.children[0];
+        const lastChild = d3Node.children[d3Node.children.length - 1].isPseudoElement ? d3Node.children[d3Node.children.length - 2] : d3Node.children[d3Node.children.length - 1];
 
-        const bottom_rect = {x: node.x, y: node.y + RECT_HEIGHT };
+        const bottom_rect = {x: d3Node.x, y: d3Node.y + RECT_HEIGHT };
         const startAngle = cartesianToAngle(bottom_rect, firstChild);
         const endAngle = cartesianToAngle(bottom_rect, lastChild);
         return createPathDOfSegment({x: 0, y: RECT_HEIGHT}, radius, startAngle, endAngle);

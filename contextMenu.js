@@ -1,11 +1,11 @@
-function collapseAction(node) {
-	node.data.toggleCollapse();
+function collapseAction(d3Node) {
+	d3Node.data.toggleCollapse();
 	updateCollapsing();
 	closeContextMenu();
 	updateSvg();
 }
 
-function contextMenu(e, node) {
+function contextMenu(e, d3Node) {
 	e.preventDefault();
 	const contextMenu = document.querySelector('.context-menu');
 
@@ -17,38 +17,38 @@ function contextMenu(e, node) {
 	contextMenu.style.left = e.pageX + 'px';
 
 	// Collapse
-	if (node.children || node.collapsedChildren) {
+	if (d3Node.children || d3Node.collapsedChildren) {
 		// Active link
 		document.querySelector('#context-menu-collapse').classList.remove('deactivated');
-		document.querySelector('#context-menu-collapse').addEventListener('click', () => collapseAction(node));
+		document.querySelector('#context-menu-collapse').addEventListener('click', () => collapseAction(d3Node));
 	} else {
 		// Inactive link
 		document.querySelector('#context-menu-collapse').classList.add('deactivated');
 	}
 
 	// Hide left siblings
-	if (node.parent?.children?.length > 1 && node.parent.children[0].data.name !== node.data.name) {
+	if (d3Node.parent?.children?.length > 1 && d3Node.parent.children[0].data.name !== d3Node.data.name) {
 		// Active link
-		document.querySelector('#context-menu-toggle-left-siblings').addEventListener('click', () => toggleLeftSiblings(node));
+		document.querySelector('#context-menu-toggle-left-siblings').addEventListener('click', () => toggleLeftSiblings(d3Node));
 	} else {
 		// Inactive link
 		document.querySelector('#context-menu-toggle-left-siblings').classList.add('deactivated');
 	}
 
 	// Hide right siblings
-	if (node.parent?.children?.length > 1 && node.parent.children[node.parent.children.length - 1].data.name !== node.data.name) {
+	if (d3Node.parent?.children?.length > 1 && d3Node.parent.children[d3Node.parent.children.length - 1].data.name !== d3Node.data.name) {
 		// Active link
-		document.querySelector('#context-menu-toggle-right-siblings').addEventListener('click', () => toggleRightSiblings(node));
+		document.querySelector('#context-menu-toggle-right-siblings').addEventListener('click', () => toggleRightSiblings(d3Node));
 	} else {
 		// Inactive link
 		document.querySelector('#context-menu-toggle-right-siblings').classList.add('deactivated');
 	}
 
 	// Highlight constraints
-	if (node.data.constraints.length) {
+	if (d3Node.data.constraints.length) {
 		// Active link
 		document.querySelector('#context-menu-highlight-constraints').addEventListener('click', () => {
-			node.data.constraints.forEach((constraint) => constraint.toggleHighlighted());
+			d3Node.data.constraints.forEach((constraint) => constraint.toggleHighlighted());
 			updateSvg();
 		});
 	} else {

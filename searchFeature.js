@@ -1,16 +1,16 @@
 document.querySelector("#feature-search").addEventListener("keyup", (e) => {
   const search = e.target.value;
 
-  allNodes.forEach((d) => {
+  allD3Nodes.forEach((d) => {
     d.data.isSearched = false;
   });
 
   if (search !== "") {
-    const foundD3Node = findNode(search);
+    const foundD3Node = findD3Node(search);
     const paths = foundD3Node.data.getAllNodesToRoot();
 
     paths.forEach((node) => (node.isSearched = true));
-    allNodes.forEach((d3Node) => d3Node.data.collapse());
+    allD3Nodes.forEach((d3Node) => d3Node.data.collapse());
 
     foundD3Node.data.uncollapse(true);
     updateCollapsing();
@@ -21,30 +21,30 @@ document.querySelector("#feature-search").addEventListener("keyup", (e) => {
   }
 });
 
-function findNode(search) {
-  [distance, node] = allNodes.reduce(
-    ([previousDistance, previousNode], currentNode) => {
-      const currentNodeName = currentNode.data.name.toLowerCase();
+function findD3Node(search) {
+  [distance, d3Node] = allD3Nodes.reduce(
+    ([previousDistance, previousD3Node], currentD3Node) => {
+      const currentNodeName = currentD3Node.data.name.toLowerCase();
       if (
         currentNodeName !== search.toLowerCase() &&
         currentNodeName.includes(search.toLowerCase())
       ) {
-        return [1, currentNode];
+        return [1, currentD3Node];
       }
 
       const currentDistance = levenshtein(
-        currentNode.data.name.toLowerCase(),
+        currentD3Node.data.name.toLowerCase(),
         search.toLowerCase()
       );
       if (previousDistance <= currentDistance) {
-        return [previousDistance, previousNode];
+        return [previousDistance, previousD3Node];
       } else {
-        return [currentDistance, currentNode];
+        return [currentDistance, currentD3Node];
       }
     }
   );
 
   // TODO: If levenshtein distance is above a good value dont display anything?
 
-  return node;
+  return d3node;
 }
