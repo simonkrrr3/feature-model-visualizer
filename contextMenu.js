@@ -44,6 +44,15 @@ function contextMenu(e, d3Node) {
 		document.querySelector('#context-menu-toggle-right-siblings').classList.add('deactivated');
 	}
 
+	// Hide current node
+	if (!d3Node.data.isHidden) {
+		// Active link
+		document.querySelector('#context-menu-hide-node').addEventListener('click', () => hideNode(d3Node));
+	} else {
+		// Inactive link
+		document.querySelector('#context-menu-hide-node').classList.add('deactivated');
+	}
+
 	// Highlight constraints
 	if (d3Node.data.constraints.length) {
 		// Active link
@@ -85,6 +94,15 @@ function toggleRightSiblings(d3Node) {
 	} else {
 		d3Node.data.hideRightSiblings();
 	}
+	
+	closeContextMenu();
+	updateHiding(d3Node.parent);
+	updateSvg();
+	focusNode(d3Node);
+}
+
+function hideNode(d3Node) {
+	d3Node.data.hide();
 	
 	closeContextMenu();
 	updateHiding(d3Node.parent);

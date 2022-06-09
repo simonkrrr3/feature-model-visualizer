@@ -189,7 +189,7 @@ function updateHighlightedConstraints(visibleD3Nodes) {
     const highlightedConstraintNodes = highlightedConstraintsContainer
         .selectAll("g.highlighted-constraints")
         .data(
-            visibleNodes.filter(
+            visibleD3Nodes.filter(
                 (d3Node) =>
                     d3Node.data instanceof FeatureNode &&
                     d3Node.data.constraintsHighlighted.length
