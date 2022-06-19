@@ -11,6 +11,7 @@ class Constraint {
     constructor(xmlToParse, featureMap, rootConstraint = this) {
         this.isHighlighted = false;
         this.operator = this.operators[xmlToParse.tagName];
+        this.xmlOperator = xmlToParse.tagName;
         this.children = [...xmlToParse.childNodes]
             .filter(node => node.tagName) // To remove #text nodes, as they don't have a tagName
             .map((node) => {
