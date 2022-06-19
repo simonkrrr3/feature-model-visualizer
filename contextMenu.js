@@ -64,6 +64,9 @@ function contextMenu(e, d3Node) {
 		// Inactive link
 		document.querySelector('#context-menu-highlight-constraints').classList.add('deactivated');
 	}
+
+	// Edit functionality
+	document.querySelector('#context-menu-edit').addEventListener('click', () => editFeatureNode(d3Node));
 }
 
 function closeContextMenu() {
@@ -81,7 +84,7 @@ function toggleLeftSiblings(d3Node) {
 	} else {
 		d3Node.data.hideLeftSiblings();
 	}
-	
+
 	closeContextMenu();
 	updateHiding(d3Node.parent);
 	updateSvg();
@@ -94,7 +97,7 @@ function toggleRightSiblings(d3Node) {
 	} else {
 		d3Node.data.hideRightSiblings();
 	}
-	
+
 	closeContextMenu();
 	updateHiding(d3Node.parent);
 	updateSvg();
@@ -103,9 +106,121 @@ function toggleRightSiblings(d3Node) {
 
 function hideNode(d3Node) {
 	d3Node.data.hide();
-	
+
 	closeContextMenu();
 	updateHiding(d3Node.parent);
 	updateSvg();
 	focusNode(d3Node);
+}
+
+function editFeatureNode(d3Node) {
+	let html = `
+		<div class="mb-3">
+			<label for="edit-feature-name" class="form-label">Node Name</label>
+			<input class="form-control" id="edit-feature-name" value=${d3Node.data.name} autofocus>
+		</div>
+	`;
+
+	// Edit mandatory/optional in and-group
+	if (d3Node.data.parent && d3Node.data.parent.isAnd()) {
+		html += `
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="edit-feature-optionality" id="edit-feature-optional" ${
+					d3Node.data.isMandatory ? '' : 'checked'
+				}>
+				<label class="form-check-label" for="edit-feature-optional">
+					Optional
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="edit-feature-optionality" id="edit-feature-mandatory" ${
+					d3Node.data.isMandatory ? 'checked' : ''
+				}>
+				<label class="form-check-label" for="edit-feature-mandatory">
+					Mandatory
+				</label>
+			</div>
+		`;
+	}
+
+	// Edit group types
+	if (!d3Node.data.isLeaf()) {
+		html += `
+			<div class="form-check">				
+				<input class="form-check-input" type="radio" name="edit-feature-group-type" id="edit-feature-group-and" ${
+					d3Node.data.isAnd() ? 'checked' : ''
+				}>
+				<label class="form-check-label" for="edit-feature-group-and">
+					And
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="edit-feature-group-type" id="edit-feature-group-or" ${
+					d3Node.data.isOr() ? 'checked' : ''
+				}>
+				<label class="form-check-label" for="edit-feature-group-or">
+					Or
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="radio" name="edit-feature-group-type" id="edit-feature-group-alt" ${
+					d3Node.data.isAlt() ? 'checked' : ''
+				}>
+				<label class="form-check-label" for="edit-feature-group-alt">
+					Alt
+				</label>
+			</div>
+		`;
+	}
+
+	// Edit isAbstract
+	html += `
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" name="flexRadioDefault" id="edit-feature-abstract" ${
+					d3Node.data.isAbstract ? 'checked' : ''
+				}>
+				<label class="form-check-label" for="edit-feature-abstract">
+					Abstract
+				</label>
+			</div>
+		`;
+
+	Swal.fire({
+		title: 'Edit node',
+		html: html,
+		showCancelButton: true,
+		confirmButtonText: 'Confirm',
+		cancelButtonText: 'Cancel',
+		preConfirm: () => {
+			const name = Swal.getPopup().querySelector('#edit-feature-name').value;
+			const optionality = Swal.getPopup().querySelector('#edit-feature-optional')?.checked ? 'optional' : 'mandatory';
+			const groupType =
+				Swal.getPopup().querySelector('#edit-feature-group-and')?.checked
+					? 'and'
+					: Swal.getPopup().querySelector('#edit-feature-group-or')?.checked
+					? 'or'
+					: 'alt';
+			const isAbstract = Swal.getPopup().querySelector('#edit-feature-abstract').checked;
+			
+			if (!name || allD3Nodes.some((d3N) => d3Node !== d3N && d3N.data.name === name)) {
+				Swal.showValidationMessage(`Please enter a unique name`);
+			}
+
+			return { name: name, optionality: optionality, groupType: groupType, isAbstract: isAbstract };
+		},
+	}).then((result) => {
+		if (result.isConfirmed) {
+			d3Node.data.name = result.value.name;
+			d3Node.data.isMandatory = result.value.optionality ? result.value.optionality === 'mandatory' : d3Node.data.isMandatory;
+			d3Node.data.groupType = result.value.groupType ?? d3Node.data.groupType;
+			d3Node.data.isAbstract = result.value.isAbstract;
+
+			updateSvg();
+		}
+		if (result.isCancelled) {
+			// Do stuff...
+		}
+
+		closeContextMenu();
+	});
 }

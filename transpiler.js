@@ -1,4 +1,4 @@
-const currentModel = hugeModel; // Choose between littleModel and hugeModel.
+const currentModel = littleModel; // Choose between littleModel and hugeModel.
 let featureMap = {};
 
 function xmlToJson() {

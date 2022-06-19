@@ -37,9 +37,14 @@ const highlightedConstraintsContainer = svgContent
 
 const linksContainer = svgContent.append("g").classed("link-container", true);
 
+const segmentsContainer = svgContent
+    .append("g")
+    .classed("segments-container", true);
+    
 const featureNodesContainer = svgContent
     .append("g")
     .classed("feature-node-container", true);
+
 
 initialize();
 updateSvg();
@@ -74,14 +79,6 @@ function updateFeatureNodes(visibleD3Nodes) {
         .append("circle")
         .classed("and-group-circle", true)
         .attr("r", MANDATORY_CIRCLE_RADIUS);
-    featureNodeEnter
-        .filter((d3Node) => d3Node.data.isAlt())
-        .append("path")
-        .classed("alt-group", true);
-    featureNodeEnter
-        .filter((d3Node) => d3Node.data.isOr())
-        .append("path")
-        .classed("or-group", true);
 
     // Enter circle with number of direct and total children.
     const childrenCountEnter = featureNodeEnter
@@ -147,18 +144,12 @@ function updateFeatureNodes(visibleD3Nodes) {
             (d3Node) =>
                 d3Node.parent && d3Node.parent.data.isAnd() && !d3Node.data.isMandatory
         );
-    featureNodeUpdate
-        .select(".alt-group")
-        .attr("d", (d3Node) => createGroupSegment(d3Node, GROUP_SEGMENT_RADIUS));
-    featureNodeUpdate
-        .select(".or-group")
-        .attr("d", (d3Node) => createGroupSegment(d3Node, GROUP_SEGMENT_RADIUS));
 
     const rectAndTextUpdate = featureNodeUpdate.select(".rect-and-text");
     rectAndTextUpdate
         .select("rect")
         .classed("is-searched-feature", (d3Node) => d3Node.data.isSearched)
-        .attr("fill", (d3Node) => d3Node.data.color)
+        .attr("fill", (d3Node) => d3Node.data.isAbstract ? NODE_ABSTRACT_COLOR : d3Node.data.color)
         .attr("x", (d3Node) => -calcRectWidth(d3Node) / 2)
         .attr("width", (d3Node) => calcRectWidth(d3Node));
     rectAndTextUpdate
@@ -275,6 +266,29 @@ function updateLinks(visibleD3Nodes) {
     const linkExit = link.exit().remove();
 }
 
+function updateSegments(visibleD3Nodes) {
+    const segment = segmentsContainer.selectAll("path.segment").data(
+        visibleD3Nodes.filter((d3Node) => d3Node.data instanceof FeatureNode && (d3Node.data.isAlt() || d3Node.data.isOr())),
+        (d3Node) => d3Node.id || (d3Node.id = ++nodeIdCounter)
+    );
+
+    const segmentEnter = segment
+        .enter()
+        .append("path")
+        .classed("segment", true);
+
+    const segmentUpdate = segmentEnter.merge(segment)
+        .classed("alt-group", (d3Node) => d3Node.data.isAlt())
+        .classed("or-group", (d3Node) => d3Node.data.isOr())
+        .attr("d", (d3Node) => createGroupSegment(d3Node, GROUP_SEGMENT_RADIUS))
+        .attr(
+            "transform",
+            (d3Node) => "translate(" + d3Node.x + ", " + d3Node.y + ")"
+        );
+
+    segment.exit().remove();
+}
+
 function updateSvg() {
     const start = performance.now();
 
@@ -282,6 +296,7 @@ function updateSvg() {
     const visibleD3Nodes = flexLayout(rootD3Node).descendants();
 
     updateHighlightedConstraints(visibleD3Nodes);
+    updateSegments(visibleD3Nodes);
     updateFeatureNodes(visibleD3Nodes);
     updateLinks(visibleD3Nodes);
 
